@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kế hoạch dự án v3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE work: a reviewed project plan handed to a 6-person team
+   IDEA a central-bank style bulletin: finding first, ruled tables, marginal change notes
+   PICTURE a week-by-member schedule grid showing who works on what and the critical path
+   COLOUR white ground, ink #14161a, deep teal #0b5d63 leading, brick #b4441c only for "changed" notes
+   TYPE Libre Caslon Text for headings, Inter for text and tables
+   LAYOUT title + verdict + figures across the top, schedule grid full width beneath; on phone stack */
+:root{color-scheme:light dark;--bg:light-dark(#ffffff,#0d1416);--ink:light-dark(#14161a,#e7ecec);--mute:light-dark(#5b6266,#9aa6a8);--rule:light-dark(#d9dddf,#2a3436);--teal:light-dark(#0b5d63,#5cc3c9);--tealbg:light-dark(#e6f1f1,#12292b);--chg:light-dark(#b4441c,#f08a62);--chgbg:light-dark(#fbefe9,#2a1912);--panel:light-dark(#f6f7f7,#131c1e)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html{scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Inter,system-ui,sans-serif;overflow-x:clip}
+.band{padding-block:clamp(24px,4vw,56px);padding-left:max(5vw,16px);padding-right:max(5vw,16px)}
+.wrap{max-width:1120px;margin:0 auto}
+h1,h2,h3{font-family:"Libre Caslon Text",Georgia,serif;line-height:1.1;letter-spacing:-.01em;text-wrap:balance;margin:0}
+h1{font-size:clamp(32px,4.6vw,48px)}
+h2{font-size:clamp(24px,3vw,32px);margin:56px 0 14px;padding-top:18px;border-top:3px solid var(--ink)}
+h3{font-size:20px;margin:30px 0 10px}
+p{margin:10px 0;max-width:72ch}
+ul,ol{padding-left:22px;max-width:76ch}
+li{margin:4px 0}
+code{font:14px/1.4 ui-monospace,Menlo,monospace;background:var(--panel);padding:1px 5px;border-radius:3px;overflow-wrap:anywhere}
+.m{font-family:"Libre Caslon Text",Georgia,serif;font-style:italic;white-space:nowrap}
+.lead{font-size:18px;max-width:68ch;margin-top:16px}
+.top{border-top:10px solid var(--teal)}
+.figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(9.5em,1fr));gap:0;margin-top:26px;border-top:1px solid var(--rule)}
+.figs div{padding:12px 14px 12px 0;border-bottom:1px solid var(--rule)}
+.figs b{display:block;font:700 clamp(26px,3vw,34px)/1.1 "Libre Caslon Text",Georgia,serif;color:var(--teal)}
+.figs span{font-size:14px;color:var(--mute)}
+nav.scroll{display:flex;gap:6px;overflow-x:auto;padding:10px max(5vw,16px);border-block:1px solid var(--rule);background:var(--bg)}
+nav.scroll a{flex:none;color:var(--ink);text-decoration:none;font-size:14px;padding:8px 12px;border-radius:4px;min-height:40px;display:flex;align-items:center}
+nav.scroll a:hover,nav.scroll a:focus-visible{background:var(--tealbg);outline:2px solid var(--teal)}
+@media(min-width:900px){nav.scroll{position:sticky;top:0;z-index:5}}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:15px;margin:12px 0}
+th,td{text-align:left;vertical-align:top;padding:8px 10px;border-bottom:1px solid var(--rule)}
+th{font-weight:600;border-bottom:2px solid var(--ink);font-size:14px}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.tot td{font-weight:700;border-top:2px solid var(--ink)}
+.chg{border-left:4px solid var(--chg);background:var(--chgbg);padding:10px 14px;margin:14px 0;max-width:80ch;font-size:15px}
+.chg b:first-child{color:var(--chg)}
+.chg .why{display:block;margin-top:4px;color:var(--ink)}
+.note{border-left:4px solid var(--teal);background:var(--tealbg);padding:10px 14px;margin:14px 0;max-width:80ch;font-size:15px}
+.tag{display:inline-block;font-size:12px;font-weight:600;color:var(--chg);border:1px solid var(--chg);border-radius:3px;padding:0 5px;margin-left:6px;vertical-align:2px;white-space:nowrap}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:14px;color:var(--mute);margin:10px 0 0}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:2px;vertical-align:-2px;margin-right:6px}
+/* schedule grid */
+.gantt{display:grid;grid-template-columns:7.5em repeat(6,minmax(0,1fr));border-top:2px solid var(--ink);margin-top:18px;min-width:640px}
+.gantt .h{font-size:13px;font-weight:600;padding:8px 6px;border-bottom:1px solid var(--rule)}
+.gantt .who{font-size:14px;font-weight:600;padding:10px 6px;border-bottom:1px solid var(--rule)}
+.gantt .who small{display:block;font-weight:400;color:var(--mute);font-size:13px;line-height:1.25}
+.gantt .row{grid-column:2/8;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:3px;padding:6px 0;border-bottom:1px solid var(--rule);position:relative}
+.bar{border-radius:3px;font-size:13px;line-height:1.25;padding:5px 6px;color:#fff;overflow:hidden}
+.c{background:#0b5d63}.s{background:#4c8f94}.p{background:#9bbfc1;color:#14161a}.e{background:#b4441c}.q{background:#6b7175}
+.gantt .h.wk{text-align:center;border-left:1px solid var(--rule)}
+@media(max-width:700px){.gantt{grid-template-columns:5.2em repeat(6,minmax(0,1fr))}.bar{font-size:12px;padding:4px}.gantt .who small{display:none}}
+@media(max-width:600px){table{font-size:13px}th,td{padding:6px 4px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px;border-bottom:1px solid var(--rule)}.stack td{display:flex;justify-content:space-between;gap:12px;border:0;padding:3px 0}.stack td::before{content:attr(data-l);font-weight:600;color:var(--mute);flex:none;max-width:42%}}
+.rounds{display:grid;grid-template-columns:repeat(auto-fit,minmax(15em,1fr));gap:18px;margin-top:10px}
+.rounds div{border-top:3px solid var(--teal);padding-top:8px}
+.rounds b{font-family:"Libre Caslon Text",Georgia,serif;font-size:28px;color:var(--teal)}
+footer{color:var(--mute);font-size:14px;border-top:1px solid var(--rule);margin-top:48px;padding-top:14px}
+@media (prefers-reduced-motion:no-preference){.bar{transition:filter .15s}.bar:hover{filter:brightness(1.12)}}
+</style>
+<script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script>
+</head>
+<body>
+
+<header class="band top">
+<div class="wrap">
+<h1>Kế hoạch dự án v3: phát hiện văn bản tiếng Việt do AI viết và văn bản lai Người–AI</h1>
+<p class="lead">Bản v3 sửa lại plan đang có trên <code>main</code> (<code>Detailed_Project_Plan.md</code>) và đã qua <b>3 vòng review độc lập</b>. <b>Kết luận của vòng cuối:</b> sẵn sàng giao cho nhóm, không còn lỗi nghiêm trọng. Có 28 thay đổi, chia làm 3 nhóm:</p>
+<ul class="lead">
+<li><b>Chặn các "đường tắt" trong dữ liệu.</b> Đó là vị trí mở đầu bài, độ dài, miền văn bản và kiểu ký tự: những dấu hiệu khiến mô hình đoán được nhãn mà không cần hiểu văn phong.</li>
+<li><b>Đo tỷ lệ báo nhầm (FPR) với đủ mẫu.</b> Thêm 1,000 bài Người chỉ dùng để chọn ngưỡng và đo FPR.</li>
+<li><b>Chia việc để ít phải chờ nhau.</b> Chốt các định dạng trao đổi dữ liệu ngay ngày 1–2, phát hành dữ liệu theo đợt, và chuyển bớt việc khỏi đường găng (chuỗi việc nối tiếp quyết định tiến độ cả dự án).</li>
+</ul>
+<p><b>Cách đọc các thay đổi:</b> chỗ nào khác plan gốc trên repo đều có nhãn <span class="tag">Thay đổi</span> và một khung màu cam ghi <i>bản gốc làm gì → v3 làm gì → vì sao</i>. Phần không có khung cam là giữ nguyên ý của plan gốc. Bảng tổng hợp cả 28 thay đổi nằm ở <a href="#phu-luc">Phụ lục A</a>.</p>
+<div class="figs">
+<div><b>5,490</b><span>mẫu Core (bản cũ: ~5,350)</span></div>
+<div><b>820</b><span>bài Người để đo FPR (bản cũ: ~320)</span></div>
+<div><b>2,750</b><span>văn bản cần sinh (thực tế sinh dư lên ~3,300)</span></div>
+<div><b>5 + 1</b><span>tuần, 6 thành viên</span></div>
+<div><b>28</b><span>thay đổi so với plan trên repo</span></div>
+</div>
+</div>
+</header>
+
+<nav class="scroll" aria-label="Mục lục">
+<a href="#doc-nhanh">Đọc nhanh</a><a href="#lich">Lịch & phân công</a><a href="#muc-tieu">1. Mục tiêu</a><a href="#kien-truc">2. Kiến trúc</a><a href="#du-lieu">3. Dữ liệu</a><a href="#tinh-toan">4. Tính toán & cổng</a><a href="#phan-cong">5. Phân công</a><a href="#repo">6. Repo</a><a href="#lo-trinh">7. Lộ trình</a><a href="#rui-ro">8. Rủi ro</a><a href="#nghiem-thu">9. Nghiệm thu</a><a href="#phu-luc">Phụ lục A</a><a href="#review">Nhật ký review</a>
+</nav>
+
+<main class="band">
+<div class="wrap">
+
+<section id="doc-nhanh">
+<h2>Đọc nhanh: cả dự án trong một phút</h2>
+<div class="scroll"><table class="stack">
+<thead><tr><th>Câu hỏi</th><th>Trả lời ngắn</th></tr></thead>
+<tbody>
+<tr><td><b>Làm gì?</b></td><td>Cho một văn bản tiếng Việt, trả lời hai câu hỏi: (1) có phần nào do AI viết không, và (2) nếu có thì AI bắt đầu viết từ câu nào.</td></tr>
+<tr><td><b>Dữ liệu?</b></td><td>Bài báo, Wikipedia và sách tiếng Việt do người viết. Lấy một số câu đầu của bài, cho LLM viết tiếp để tạo văn bản "lai" (Mixed) biết chính xác câu ranh giới. Tổng 5,490 mẫu: Người, AI thuần, Mixed.</td></tr>
+<tr><td><b>Mô hình?</b></td><td>Ba hướng: (a) zero-shot, chỉ đo "độ bất ngờ" của văn bản dưới một LLM; (b) fine-tune PhoBERT; (c) Hybrid, kết hợp hai hướng trên. Ở mức câu, mỗi câu được chấm xác suất là AI, rồi tìm điểm chuyển Người → AI.</td></tr>
+<tr><td><b>Đánh giá?</b></td><td>Thử trên LLM đã thấy lúc train (ID) và LLM chưa từng thấy (OOD); thử trên văn học, ChatGPT/Gemini và văn bản đã viết lại. Đo cả tỷ lệ "đổ oan" cho người viết.</td></tr>
+<tr><td><b>Sản phẩm?</b></td><td>Web demo: dán văn bản vào, trang tô màu từng câu theo mức nghi ngờ và chỉ ra câu ranh giới. Chạy bằng một lệnh Docker.</td></tr>
+<tr><td><b>Khác plan gốc ở đâu?</b></td><td>Ba nhóm chính: (1) chặn các "đường tắt" trong dữ liệu để mô hình không đoán nhãn theo mẹo; (2) đo tỷ lệ đổ oan với đủ mẫu; (3) chia việc lại để không ai phải ngồi chờ.</td></tr>
+</tbody></table></div>
+
+<h3>Thuật ngữ dùng trong plan</h3>
+<div class="scroll"><table class="stack">
+<thead><tr><th>Thuật ngữ</th><th>Nghĩa</th></tr></thead>
+<tbody>
+<tr><td><b>Human / AI thuần / Mixed</b></td><td>Văn bản 100% người viết / 100% AI viết / người viết phần đầu, AI viết tiếp.</td></tr>
+<tr><td><b>Ranh giới <i>b</i></b></td><td>Số thứ tự (đếm từ 0) của câu AI đầu tiên. <i>b</i> = 0: toàn AI; <i>b</i> = N (số câu): toàn Người.</td></tr>
+<tr><td><b>Generator</b></td><td>LLM dùng để sinh văn bản AI (Sailor2, Qwen, Gemma, Llama).</td></tr>
+<tr><td><b>ID / OOD</b></td><td>In-domain: generator đã có lúc train. Out-of-domain: generator chỉ xuất hiện lúc test (Gemma, Llama), để xem mô hình có khái quát được không.</td></tr>
+<tr><td><b>Đường tắt (shortcut)</b></td><td>Dấu hiệu không liên quan văn phong nhưng trùng với nhãn, ví dụ "văn bản AI luôn dài hơn". Mô hình học mẹo đó thì điểm cao nhưng vô dụng ngoài thực tế.</td></tr>
+<tr><td><b>Probe</b></td><td>Một mô hình rất đơn giản chỉ nhìn vào một dấu hiệu (câu đầu, độ dài…). Nếu nó đoán được nhãn (AUROC &gt; 0.65) thì dữ liệu còn đường tắt.</td></tr>
+<tr><td><b>AUROC</b></td><td>Khả năng xếp văn bản AI cao hơn văn bản Người; 0.5 là đoán bừa, 1.0 là hoàn hảo.</td></tr>
+<tr><td><b>FPR / TPR@1%FPR</b></td><td>FPR: tỷ lệ bài Người bị báo nhầm là AI. TPR@1%FPR: bắt được bao nhiêu % văn bản AI khi chỉ cho phép đổ oan 1% người viết.</td></tr>
+<tr><td><b>Calib (Calibration Pool)</b></td><td>1,000 bài Người thêm vào, chỉ để chọn ngưỡng và đo FPR cho chính xác.</td></tr>
+<tr><td><b>Zero-shot (Binoculars, Fast-DetectGPT)</b></td><td>Không cần huấn luyện: dùng một LLM đo xem văn bản "dễ đoán" đến mức nào; văn bản AI thường dễ đoán hơn.</td></tr>
+<tr><td><b>Hybrid</b></td><td>PhoBERT (hiểu nghĩa, văn phong) cộng các điểm xác suất của zero-shot, huấn luyện chung.</td></tr>
+<tr><td><b>Step-function decoding</b></td><td>Từ xác suất AI của từng câu, chọn một điểm cắt duy nhất sao cho phía trước là Người, phía sau là AI khớp nhất.</td></tr>
+<tr><td><b>Cache đặc trưng</b></td><td>Kết quả chạy PhoGPT trên mọi bài, lưu một lần để cả nhóm dùng lại, không ai phải chạy lại GPU.</td></tr>
+<tr><td><b>Gate (G0–G4)</b></td><td>Điểm kiểm tra bắt buộc; không đạt thì làm phương án dự phòng đã ghi sẵn.</td></tr>
+<tr><td><b>P0 / P1 / P2</b></td><td>Bắt buộc / làm nếu còn thời gian / chỉ làm khi dư nhiều thời gian.</td></tr>
+<tr><td><b>C1 / C2 / C3</b></td><td>Ba định dạng trao đổi chốt từ ngày đầu: schema dữ liệu, cache đặc trưng, file dự đoán.</td></tr>
+<tr><td><b><code>sample_500</code> / <code>data-v1a</code> / <code>data-v1</code></b></td><td>Ba đợt phát hành dữ liệu: mẫu nhỏ để dựng code → phần không cần sinh → bộ đầy đủ đã đóng băng.</td></tr>
+<tr><td><b>Bootstrap CI 95%</b></td><td>Lấy mẫu lại tập test 1,000 lần để ra khoảng sai số của mỗi con số.</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="lich">
+<h2>Ai làm gì, tuần nào: đường găng chỉ dài 2 tuần</h2>
+<p>Đường găng là chuỗi <b>dữ liệu (TV1) → đặc trưng (TV2, TV6) → mô hình dùng đặc trưng (TV3 Hybrid, TV4)</b>, và đã được rút gọn lại trong Tuần 1–2. Trong lúc chờ, mọi người đều có việc làm trên dữ liệu mẫu hoặc dữ liệu giả, theo đúng định dạng đã chốt.</p>
+<div class="scroll">
+<div class="gantt" id="gantt" role="img" aria-label="Lịch phân công 6 thành viên trong 6 tuần"></div>
+</div>
+<div class="legend"><span><i class="c"></i>Đường găng</span><span><i class="s"></i>Việc chính (P0)</span><span><i class="p"></i>Mở rộng (P1)</span><span><i class="e"></i>Đánh giá & cổng</span><span><i class="q"></i>Buffer, báo cáo</span></div>
+</section>
+
+<section id="muc-tieu">
+<h2>1. Mục tiêu và phạm vi</h2>
+<h3>1.1. Khoảng trống nghiên cứu</h3>
+<ol>
+<li>VietBinoculars và ViDetect chỉ phân loại <b>toàn văn bản</b> (100% Người hoặc 100% AI). Trường hợp hay gặp trong thực tế là <b>Người viết mở đầu, AI viết tiếp</b>.</li>
+<li>Dữ liệu VietBinoculars luôn dùng 50 token đầu làm prompt, nên không có văn bản lai với ranh giới thay đổi.</li>
+<li>Hai hướng tiếp cận có điểm yếu ngược nhau:
+<ul>
+<li><b>Zero-shot</b> (VietBinoculars, Fast-DetectGPT) khái quát tốt sang LLM mới, nhưng yếu với văn bản ngắn và văn bản đã paraphrase.</li>
+<li><b>Supervised</b> (PhoBERT) mạnh trên in-domain, tức các generator đã có trong tập train, nhưng dễ overfit vào chính các generator đó.</li>
+</ul></li>
+</ol>
+<h3>1.2. Đóng góp</h3>
+<ol>
+<li><b>Bộ dữ liệu Mixed Human–AI tiếng Việt.</b> Ranh giới ngẫu nhiên theo câu, nhãn đến từng câu, chia theo bài gốc, có generator OOD (không xuất hiện khi train), đã kiểm tra đường tắt.</li>
+<li><b>Document-level:</b> so sánh Zero-shot, PhoBERT và <b>Hybrid</b> (PhoBERT kết hợp đặc trưng xác suất).</li>
+<li><b>Boundary-level:</b> so sánh hướng SeqXGPT với PhoBERT cửa sổ nhiều câu, cùng dùng bước <b>step-function decoding</b> để tìm điểm cắt.</li>
+<li><b>Demo Gradio + Docker</b> chạy bằng một lệnh, mặc định trên CPU.</li>
+</ol>
+<h3>1.3. Giới hạn, ghi rõ trong báo cáo <span class="tag">Thay đổi</span></h3>
+<ul>
+<li>Chỉ xét <b>một ranh giới Người → AI</b>. Các trường hợp AI→Người, nhiều đoạn xen kẽ, hay AI sửa từng câu để làm <i>future work</i>.</li>
+<li>Không làm contrastive learning, adversarial training, distillation, ONNX (những mục này có trong bản nháp đăng ký). <b>Tuần 1 xác nhận phạm vi với GVHD.</b></li>
+<li>PhoGPT và PhoBERT đã được pretrain trên tin tức và Wikipedia tiếng Việt, nên có thể đã "thấy" một số bài Người. Khi đó perplexity của các bài này thấp và FPR ở các miền đó cao hơn, vì vậy cần báo cáo FPR theo từng miền.</li>
+<li>Sailor2 xây trên Qwen2.5, và Qwen2.5-7B là generator in-domain. Vì vậy mọi detector họ Qwen (QLoRA, phương án dự phòng Qwen-1.5B, chế độ Lite dùng Qwen-0.5B) đều có lợi thế trên dữ liệu in-domain. <b>Chỉ xếp hạng các detector này trên phần OOD.</b></li>
+</ul>
+<div class="chg"><b>Thay đổi:</b> plan cũ nêu "Mixed" như cả trường hợp AI sửa từng đoạn, nhưng dữ liệu thực tế chỉ có một ranh giới; plan cũ cũng chỉ nhắc chuyện cùng họ model cho QLoRA.<span class="why"><b>Lý do:</b> nếu không nói trước phạm vi, người chấm sẽ hỏi; còn nếu bỏ qua chuyện cùng họ model, điểm in-domain của các detector họ Qwen bị thổi phồng mà không ai biết.</span></div>
+<h3>1.4. Tầng ưu tiên <span class="tag">Thay đổi</span></h3>
+<div class="scroll"><table class="stack">
+<thead><tr><th>Tầng</th><th>Nội dung</th></tr></thead>
+<tbody>
+<tr><td><b>P0</b>, bắt buộc</td><td>Dataset Core + Calib + ST1–ST2; VietBinoculars, Fast-DetectGPT và các baseline thống kê; PhoBERT Doc; Hybrid; boundary bằng SeqXGPT và PhoBERT; step-function decoding; metrics + bootstrap; Demo Fast + Docker</td></tr>
+<tr><td><b>P1</b></td><td>QLoRA <code>Qwen2.5-1.5B</code>; ST3 (paraphrase/sampling); Demo Lite; bài toán 3 lớp</td></tr>
+<tr><td><b>P2</b></td><td>Ensemble điểm câu PhoBERT + SeqXGPT; scale-up PhoBERT lên 20k mẫu; <code>xlm-roberta</code>/<code>mDeBERTa</code>; Demo Full chạy GPU</td></tr>
+</tbody></table></div>
+<div class="chg"><b>Thay đổi:</b> plan cũ coi mọi hạng mục ngang nhau.<span class="why"><b>Lý do:</b> 6 người trong 5 tuần cần biết trước khi trễ thì cắt việc gì. Khi đó P2 bị cắt trước, rồi đến P1, còn P0 luôn đủ để nghiệm thu.</span></div>
+</section>
+
+<section id="kien-truc">
+<h2>2. Kiến trúc: bốn tầng, đặc trưng chỉ trích một lần</h2>
+<div class="scroll"><table>
+<thead><tr><th>Tầng</th><th>Thành phần</th><th>Đầu ra</th></tr></thead>
+<tbody>
+<tr><td><b>1. Dữ liệu</b></td><td>A1 News + B8 Wiki + B9 Books, làm sạch đồng nhất cho mọi nhãn. Văn bản sinh bằng vLLM, sinh dư 20%: Qwen2.5-7B base (in-domain), Llama-3.1-8B base (OOD).</td><td><code>data-v1</code> = Core 5,490 + Calib 1,000 + Stress-Test, đóng băng giữa Tuần 2</td></tr>
+<tr><td><b>2. Đặc trưng</b></td><td>Cặp PhoGPT-4B / 4B-Chat, context 1,024 token. Cặp Qwen2.5-0.5B / 0.5B-Instruct cho chế độ Lite.</td><td>Cache float16, mỗi split một file, khóa bằng <code>sample_id</code> + hash văn bản</td></tr>
+<tr><td><b>3. Mô hình</b></td><td>Doc: Zero-shot, PhoBERT cửa sổ trượt, Hybrid end-to-end, (P1) QLoRA. Boundary: SeqXGPT, PhoBERT nhiều câu, step-function decoding.</td><td>File dự đoán chung định dạng <code>preds/&lt;model&gt;_&lt;split&gt;.jsonl</code></td></tr>
+<tr><td><b>4. Đánh giá & Demo</b></td><td>Core Test tách ID/OOD, Calib, Stress-Test; bootstrap CI 95% (paired). Gradio với 3 chế độ Fast / Lite / Full.</td><td>Bảng kết quả, biểu đồ, Docker</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="du-lieu">
+<h2>3. Dữ liệu: mọi nhãn qua cùng một quy trình làm sạch</h2>
+<h3>3.1. Nguồn: 9 bộ, ~7.8 GB, chỉ lưu ở local</h3>
+<ul>
+<li><b>A1</b> <code>vietnamese-news</code>: <code>train</code> 41,345 cặp Sailor2-8B; <code>validation</code> 19,129 cặp Sailor2-8B; <code>test</code> 7,222 cặp Gemma-3-12B.</li>
+<li><b>A2/A3/A4/B6</b>: họ Vũ Trọng Phụng, cùng xoay quanh 369 đoạn gốc. <b>Chỉ dùng cho Stress-Test.</b></li>
+<li><b>A5</b> ICCIES 2025 (GPT-4o-mini, Gemini 1.5 Flash, DeepSeek). <b>Chỉ dùng cho Stress-Test.</b></li>
+<li><b>B8</b> Wikipedia sạch và <b>B9</b> Books sạch: bổ sung miền văn bản cho Core.</li>
+<li><b>B7</b> Binhvq: không dùng.</li>
+<li>Ghi giấy phép và điều khoản sử dụng của từng bộ vào phụ lục báo cáo.</li>
+</ul>
+
+<h3>3.2. Bảy quy tắc làm sạch, áp dụng đồng nhất cho mọi nhãn</h3>
+<ol>
+<li><b>Gate G0: kiểm tra prompt trong văn bản AI của A1.</b> Code đọc cột <code>*-generated_text</code> cho A1 nhưng cột <code>*_wo_prompt</code> cho bộ Vũ Trọng Phụng. Ngày 1–2, kiểm tra 20 dòng. Nếu văn bản AI còn chứa prompt 50 token thì cắt prompt theo độ dài ký tự, rồi mới bỏ câu cụt đầu.</li>
+<li><b>Cắt đầu đối xứng.</b> Văn bản AI của A1 luôn bắt đầu <i>giữa bài</i>, nên mọi văn bản Người lấy từ A1 (Human, mồi Mixed, mồi AI-Qwen) cũng phải bỏ các câu đầu. Cắt tới câu hoàn chỉnh đầu tiên nằm sau mốc 50 token (đo bằng tokenizer Sailor2). Wiki theo cùng quy tắc; Books đã lấy từ giữa sách nên giữ nguyên.</li>
+<li><b>Chuẩn hóa ký tự</b> trước khi tách câu: NFC; một dạng duy nhất cho ngoặc kép/đơn, gạch ngang, dấu ba chấm và khoảng trắng quanh dấu câu. Áp dụng cho mọi nhãn và cả input của demo.</li>
+<li><b>Câu cuối cụt:</b> bỏ câu cuối không có dấu kết thúc, ở mọi nhãn.</li>
+<li><b>Một hàm <code>length_ok()</code> chung cho mọi nhãn,</b> chạy sau cùng: 6–24 câu và 150–650 từ.</li>
+<li><b>A4:</b> bỏ các dòng lẫn tiếng Mã Lai (tỷ lệ ký tự có dấu tiếng Việt dưới 5%).</li>
+<li><b>Khử trùng lặp:</b> MinHash 5-gram ký tự, Jaccard ≥ 0.8, giữa <b>mọi cặp tập</b> (Train, Val, Test, Calib, Stress), kể cả giữa các file A1.</li>
+</ol>
+<div class="chg"><b>Thay đổi:</b> plan cũ chỉ cắt câu cụt ở văn bản AI, chỉ chuẩn hóa NFC, mỗi script dùng một ngưỡng độ dài riêng (110–950 từ, 3–28 câu), và khử trùng lặp bằng 80 ký tự đầu.<span class="why"><b>Lý do:</b> mỗi khác biệt giữa các nhãn là một đường tắt cho mô hình:
+<br>• Văn bản Người bắt đầu bằng câu mở bài, còn văn bản AI bắt đầu giữa bài, nên mô hình có thể học "vị trí" thay vì "văn phong".
+<br>• Báo chí và LLM dùng kiểu dấu câu khác nhau. Trong văn bản Mixed, chỗ đổi kiểu dấu câu lộ luôn ranh giới.
+<br>• Ngưỡng độ dài khác nhau theo nhãn tạo ra đường tắt độ dài.
+<br>• Đầu bài đã bị cắt nên so khớp 80 ký tự đầu không còn bắt được bài trùng.
+<br>Riêng G0: nếu văn bản AI còn chứa prompt, các câu Người trong đó bị gán nhãn AI.</span></div>
+
+<h3>3.3. Tập Core: 5,490 mẫu, chia theo bài gốc</h3>
+<p>Ba lô bài gốc <b>rời nhau</b> theo <code>source_article_id</code>. Lấy mẫu phân tầng theo bin độ dài và miền, thêm <code>topic</code> nếu A1 có cột này. <code>SEED = 42</code>. Trong ngoặc là số mẫu News · Wiki · Books.</p>
+<div class="scroll"><table class="stack">
+<thead><tr><th>Split</th><th>Human</th><th>AI thuần</th><th>Mixed</th><th class="n">Tổng</th></tr></thead>
+<tbody>
+<tr><td><b>Train</b></td><td>1,000 (850 · 100 · 50)</td><td>1,000 = 780 Sailor2 + 220 Qwen (160 · 40 · 20)</td><td>1,500 Qwen (1,250 · 150 · 100)</td><td class="n">3,500</td></tr>
+<tr><td><b>Val</b></td><td>220 (185 · 20 · 15)</td><td>200 = 150 Sailor2 + 50 Qwen (35 · 10 · 5)</td><td>330 Qwen (280 · 30 · 20)</td><td class="n">750</td></tr>
+<tr><td><b>Test-ID</b></td><td>170 (120 · 30 · 20)</td><td>100 = 70 Sailor2 + 30 Qwen (20 · 5 · 5)</td><td>120 Qwen (95 · 15 · 10)</td><td class="n">390</td></tr>
+<tr><td><b>Test-OOD</b></td><td>150 (110 · 25 · 15)</td><td>300 = 200 Gemma-3-12B + 100 Llama (70 · 20 · 10)</td><td>400 Llama (330 · 45 · 25)</td><td class="n">850</td></tr>
+<tr class="tot"><td>Tổng</td><td>1,540</td><td>1,600</td><td>2,350</td><td class="n">5,490</td></tr>
+</tbody></table></div>
+<ul>
+<li><b>Nguồn theo file A1:</b>
+<ul>
+<li>Train lấy từ <code>A1/train</code>.</li>
+<li>Val và Test-ID lấy từ <code>A1/validation</code>, chia theo dòng 60/40, không chồng lấn.</li>
+<li>Test-OOD lấy từ <code>A1/test</code>.</li>
+</ul></li>
+<li><b>Pool Wiki/Books chia cố định</b> (train / val / test): Wiki 700 / 200 / 300, Books 450 / 150 / 200. Kích thước được đếm <i>sau</i> khi đã cắt đầu và lọc độ dài, nên phải quét nhiều file parquet, không chỉ <code>part_files[0]</code> như code hiện tại.</li>
+<li><b>OOD thật sự:</b> Gemma-3-12B và Llama-3.1-8B chỉ có ở Test. Llama có cả AI thuần lẫn Mixed. Báo cáo ID và OOD tách riêng; trong OOD báo cáo theo generator × loại văn bản, cùng một dòng "chỉ News".</li>
+<li><b>Sinh dư 20%:</b> cần 2,750 văn bản sinh (300 AI-Qwen, 1,950 Mixed-Qwen, 100 AI-Llama, 400 Mixed-Llama). Chuẩn bị ~3,300 mồi, sau khi lọc thì lấy mẫu phân tầng xuống đúng số trong bảng.</li>
+</ul>
+<div class="chg"><b>Thay đổi:</b>
+<br>• Plan cũ: Lô Human ~1,500 "chia đều", Gemma ~300, Llama ~600, Wiki/Books chỉ có ở lớp Human. Code hiện tại thì cho AI thuần chỉ có News, OOD Human chỉ có News, và Llama chỉ dùng cho Mixed.
+<br>• v3: bảng trên khớp code và bổ sung 40 Human Wiki/Books + 100 AI-Llama cho OOD. Tổng tăng từ 5,350 lên 5,490.<span class="why"><b>Lý do:</b>
+<br>• Plan và code phải dùng cùng một bộ số liệu.
+<br>• Nếu Wiki/Books chỉ xuất hiện ở một phía của nhãn, miền văn bản sẽ lộ nhãn.
+<br>• Nếu Gemma chỉ là AI thuần và Llama chỉ là Mixed, không tách được tác động của "generator lạ" với tác động của "loại văn bản".
+<br>• Code hiện chỉ có 200 bài Wiki cho test trong khi cần khoảng 217, nên <code>stratified_pick</code> sẽ báo thiếu mẫu.
+<br>• Bước hậu xử lý loại bớt mẫu mà không bù, nên phải sinh dư.</span></div>
+
+<h3>3.4. Human Calibration Pool: 1,000 bài Người, không cần sinh</h3>
+<ul>
+<li><b>Val-Calib</b> (400 News · 60 Wiki · 40 Books): <b>chỉ dùng để chọn ngưỡng 1% FPR</b>, không dùng cho early stopping hay chọn model.</li>
+<li><b>Test-Calib</b> (~300 A1-val-tail · 100 A1-test · 60 Wiki · 40 Books): cộng với 320 bài Người trong Core Test thành <b>820 bài Người</b> để đo FPR và TPR@1%FPR.</li>
+<li>Không dùng để huấn luyện; không tính vào F1/Accuracy của Core Test.</li>
+<li>Chi phí: TV2 trích đặc trưng thêm khoảng 1,000 bài; không tốn giờ sinh.</li>
+<li><b>Bỏ chỉ số <code>TPR@0.06%FPR</code>.</b></li>
+</ul>
+<div class="chg"><b>Thay đổi:</b> plan cũ chọn ngưỡng trên Val (220 bài Người), đo <code>TPR@1%FPR</code> trên Test (khoảng 320 bài Người), và báo cáo cả <code>TPR@0.06%FPR</code>.<span class="why"><b>Lý do:</b>
+<br>• Với 220–320 bài Người, mức 1% FPR chỉ tương ứng 2–3 mẫu báo nhầm, nên con số dao động rất mạnh.
+<br>• Đo 0.06% FPR cần ít nhất 1,700 bài Người, kể cả khi chỉ cho phép một lần báo nhầm.
+<br>• Lấy thêm bài Người rẻ, vì không cần sinh văn bản.
+<br>• Tách riêng tập dùng để chọn ngưỡng giúp tránh thiên lệch chọn lựa.</span></div>
+
+<h3>3.5. Sinh văn bản: TV4 sở hữu script, TV1 sinh Qwen, TV4 sinh Llama</h3>
+<ul>
+<li><b>Model:</b> <code>Qwen/Qwen2.5-7B</code> base (in-domain) và Llama-3.1-8B base (OOD). Llama dùng bản mirror <code>unsloth/Meta-Llama-3.1-8B</code>, không cần xin quyền. Dự phòng: <code>SeaLLMs-v3-7B</code>.</li>
+<li><b>Môi trường:</b>
+<ul>
+<li>Pin một phiên bản vLLM đã chạy được trên T4 (kiểm tra ở Gate G2).</li>
+<li>fp16, <code>tensor_parallel_size=2</code>.</li>
+<li><b>Không tự chuyển xuống 4-bit:</b> nếu chỉ có 1 GPU thì script dừng, hoặc ghi lại cấu hình vào trường <code>gen_config</code> của từng mẫu.</li>
+</ul></li>
+<li><b>Tham số</b> (thống nhất theo code): <code>temperature=0.7</code>, <code>top_p=0.9</code>, <code>repetition_penalty=1.08</code>, <code>max_tokens = min(700, 1.55 × số từ còn lại + 80)</code>.</li>
+<li><b>Prompt:</b> <i>k</i> câu Người đã làm sạch, <b>không có dấu cách thừa ở cuối</b>; <code>lstrip()</code> phần sinh ra.</li>
+<li><b>Điểm cắt Mixed:</b> với bài <i>N</i> câu, chọn <span class="m">k</span> ngẫu nhiên đều trong khoảng {max(2, ⌊0.2N⌋) … min(N−2, ⌊0.8N⌋)}.</li>
+<li><b>Hậu xử lý:</b>
+<ul>
+<li>Cắt tại <code>\n\n</code> đầu tiên, hoặc tại dòng đầu tiên không có dấu kết thúc câu.</li>
+<li>Loại mẫu nếu khớp regex <code>Dưới đây là|Phần tiếp theo|Tin liên quan|Xem thêm|Tags|Bài viết liên quan</code>, hoặc nếu lặp lại câu <i>s<sub>k</sub></i>.</li>
+<li>Chuẩn hóa ký tự; bỏ câu cụt cuối.</li>
+</ul></li>
+<li><b>Ghép và gán nhãn:</b>
+<ul>
+<li>Chỉ tách câu trên <i>phần sinh</i>, rồi ghép: <i>k</i> câu Người (nhãn 0) + <i>M</i> câu AI (nhãn 1), với <i>M</i> ≥ 2.</li>
+<li>Kiểm tra <code>sentence_char_spans</code> khớp với <code>full_text</code>, rồi chạy <code>length_ok()</code>.</li>
+</ul></li>
+<li><b>AI thuần (Qwen/Llama):</b> sinh tiếp từ <i>k</i> câu mồi, <b>chỉ giữ phần sinh</b>, bỏ câu cụt cuối, rồi chạy <code>length_ok()</code>.</li>
+<li><b>QC:</b> 20 mẫu/model, 2 người cùng chấm theo 4 tiêu chí: tự nhiên, đúng tiếng Việt, không lặp, không lạc đề. Ghi tỷ lệ lỗi vào báo cáo.</li>
+<li><b>Lưu tiến độ</b> theo đợt 500 mẫu, để chạy tiếp được khi phiên Kaggle bị ngắt.</li>
+</ul>
+<div class="chg"><b>Thay đổi:</b>
+<br>• Plan cũ: sinh ở 4-bit kèm Assistant Prefill, dùng Llama gated.
+<br>• Code hiện tại: <code>top_p</code> và <code>repetition_penalty</code> khác plan, prompt kết thúc bằng dấu cách, tự chuyển xuống 4-bit khi chỉ có 1 GPU, không cắt phần sinh lan sang bài khác.<span class="why"><b>Lý do:</b>
+<br>• Chuyển xuống 4-bit làm thay đổi phân phối văn bản, trong khi nhãn <code>generator</code> không ghi lại điều đó.
+<br>• Với tokenizer BPE, dấu cách cuối prompt làm token đầu tiên bị tách lạ, tạo dấu vết nhân tạo đúng tại ranh giới.
+<br>• Base model hay viết lan sang tiêu đề hoặc bài khác, làm câu AI lạc đề và dễ bị nhận ra.
+<br>• Bản vLLM mới nhất có thể không chạy trên T4.</span></div>
+
+<h3>3.6. Kiểm tra đường tắt: Gate G3a và G3b</h3>
+<p>Mỗi probe là một Logistic Regression huấn luyện trên Train và đo AUROC trên Val. <b>Đạt khi AUROC ≤ 0.65.</b> Cả 5 probe chạy thử trên <code>sample_500</code> ngay cuối Tuần 1 để phát hiện sớm.</p>
+<div class="scroll"><table class="stack">
+<thead><tr><th>Probe</th><th>Đầu vào</th><th>So sánh</th><th>Gate</th></tr></thead>
+<tbody>
+<tr><td>Câu đầu</td><td>TF-IDF ký tự 2–5 gram của câu đầu</td><td>Human vs AI thuần</td><td>G3a</td></tr>
+<tr><td>Câu cuối</td><td>như trên, cho câu cuối</td><td>Human vs AI thuần (G3a); Human vs Mixed (G3b)</td><td>G3a, G3b</td></tr>
+<tr><td>Độ dài</td><td>số từ, số câu, độ dài câu trung bình</td><td>Human vs AI + Mixed</td><td>G3a</td></tr>
+<tr><td>Ký tự</td><td>tần suất dấu câu và ký tự đặc biệt</td><td>Human vs AI + Mixed</td><td>G3a</td></tr>
+<tr><td>Ranh giới</td><td>2 câu quanh ranh giới <i>b</i> của Mixed</td><td>vs 2 câu liền kề ở vị trí ngẫu nhiên trong bài Human</td><td>G3b</td></tr>
+</tbody></table></div>
+<div class="chg"><b>Thay đổi:</b> plan cũ không có bước kiểm tra nào.<span class="why"><b>Lý do:</b>
+<br>• Nếu không có probe, AUROC ≈ 1.0 có thể chỉ là mô hình học đường tắt mà không ai phát hiện.
+<br>• Tách G3a (chạy trên dữ liệu không cần sinh) giúp TV2 bắt đầu trích đặc trưng sớm mà không sợ phải làm lại.</span></div>
+
+<h3>3.7. Stress-Test: chỉ để test</h3>
+<div class="scroll"><table class="stack">
+<thead><tr><th>Bộ</th><th>Nguồn</th><th>Mục đích</th><th class="n">Cỡ</th></tr></thead>
+<tbody>
+<tr><td>ST1 (P0)</td><td>A2 Vũ Trọng Phụng</td><td>OOD miền văn học</td><td class="n">738</td></tr>
+<tr><td>ST2 (P0)</td><td>A5 ICCIES</td><td>LLM thương mại, sau khi khử trùng bằng MinHash</td><td class="n">~1,000</td></tr>
+<tr><td>ST3 (P1)</td><td>A4 (bản gốc → paraphrase lần 1 → lần 2 → humanized) + A3 (theo nhiệt độ sinh)</td><td>Đường suy giảm AUROC</td><td class="n">300–500</td></tr>
+</tbody></table></div>
+<ul>
+<li>ST1–ST2 do TV5 dựng và nằm trong <code>data-v1a</code>.</li>
+<li>ST3 do TV1 dựng ở Tuần 3 và phát hành riêng dưới tên <code>stress-v1b</code>, không chạm vào dữ liệu Core đã đóng băng.</li>
+<li>Văn bản Người trong Stress-Test cũng phải cắt đầu đối xứng.</li>
+</ul>
+<div class="chg"><b>Thay đổi:</b> plan cũ để TV1 dựng cả 3 bộ ở Tuần 2, chưa có bước cắt đầu đối xứng.<span class="why"><b>Lý do:</b>
+<br>• Nếu không cắt đầu đối xứng, kết quả Stress-Test bị thổi phồng giống như ở Core.
+<br>• Chuyển việc sang TV5 giúp giảm tải cho TV1, người đang ở đường găng.</span></div>
+
+<h3>3.8. Schema dữ liệu và quy ước ranh giới</h3>
+<pre class="scroll"><code>{"sample_id": "test_mixed_llama_0012", "source_article_id": "news_00142",
+ "split": "test", "subset": "core", "is_ood_generator": true, "domain": "news",
+ "doc_label": 1, "doc_type": "mixed_human_ai", "generator": "meta-llama/Llama-3.1-8B",
+ "gen_config": {"repo": "unsloth/Meta-Llama-3.1-8B", "dtype": "fp16", "temperature": 0.7, "top_p": 0.9},
+ "boundary_sentence_idx": 4,
+ "full_text": "Câu 1. Câu 2. Câu 3. Câu 4. Câu 5 do AI. Câu 6 do AI.",
+ "sentences": ["Câu 1.", "Câu 2.", "Câu 3.", "Câu 4.", "Câu 5 do AI.", "Câu 6 do AI."],
+ "sentence_char_spans": [[0,6],[7,13],[14,20],[21,27],[28,40],[41,53]],
+ "sentence_labels": [0,0,0,0,1,1]}</code></pre>
+<p><b>Một quy ước ranh giới duy nhất:</b> <code>boundary_sentence_idx</code> = <i>b</i> ∈ {0 … N} là chỉ số (đếm từ 0) của câu AI đầu tiên. <b><i>b</i> = 0 nghĩa là 100% AI, <i>b</i> = N nghĩa là 100% Người.</b> Bất biến: <code>sentence_labels[i] == int(i &gt;= b)</code>. </p>
+<ul>
+<li><code>subset</code> ∈ {<code>core</code>, <code>calib</code>, <code>stress</code>} cho biết mẫu thuộc tập nào.</li>
+<li><code>gen_config</code> ghi lại repo, dtype và tham số sinh, để biết chính xác văn bản được sinh thế nào.</li>
+<li><b>Nhãn Doc</b> là bài toán nhị phân: Human (0) với AI + Mixed (1). Báo cáo thêm tỷ lệ phát hiện theo từng <code>doc_type</code>.</li>
+</ul>
+<div class="chg"><b>Thay đổi:</b> schema cũ dùng <code>-1</code> cho bài 100% Người, trong khi công thức làm mượt dùng <i>b</i> = N.<span class="why"><b>Lý do:</b> hai quy ước mâu thuẫn nhau sẽ gây lỗi khi tính MAE và khi decoding. Cần sửa cả <code>make_ready_record</code> lẫn <code>validate_all_splits</code>.</span></div>
+</section>
+
+<section id="tinh-toan">
+<h2>4. Tính toán, lưu trữ và các cổng quyết định</h2>
+<h3>4.1. Ước lượng GPU (Kaggle 2×T4, ~30 giờ/tuần cho mỗi tài khoản)</h3>
+<div class="scroll"><table class="stack">
+<thead><tr><th>Tác vụ</th><th>Ai</th><th>Ước lượng</th></tr></thead>
+<tbody>
+<tr><td>Sinh ~3,300 văn bản (vLLM fp16, TP=2)</td><td>TV1 (Qwen) + TV4 (Llama)</td><td>3–5 giờ</td></tr>
+<tr><td>Cặp PhoGPT-4B, ~8,800 bài, context 1,024</td><td>TV2 + TV6</td><td>6–8 giờ, chia 2 tài khoản</td></tr>
+<tr><td>Cặp Qwen2.5-0.5B (cho Lite)</td><td>TV2</td><td>~1 giờ</td></tr>
+<tr><td>PhoBERT Doc / Boundary, 3 seed</td><td>TV3, TV5</td><td>1–2 giờ mỗi lần chạy</td></tr>
+<tr><td>Hybrid end-to-end, 3 seed</td><td>TV3</td><td>1–2 giờ mỗi lần chạy</td></tr>
+<tr><td>QLoRA Qwen2.5-1.5B (P1)</td><td>TV2</td><td>3–4 giờ</td></tr>
+<tr><td>SeqXGPT, decoding</td><td>TV4</td><td>CPU hoặc 1 T4</td></tr>
+</tbody></table></div>
+<p><b>Ngân sách GPU cả dự án theo tài khoản:</b> TV1 ~6 · TV4 ~4 · TV2 ~12 · TV6 ~5 · TV3 ~8 · TV5 ~6 giờ. Không tài khoản nào vượt hạn mức tuần.</p>
+<p><b>Lưu ý kỹ thuật PhoGPT:</b></p>
+<ul>
+<li>Hai model dùng chung tokenizer; kiểm tra vocab giống hệt nhau.</li>
+<li>T4 chỉ chạy fp16, nên ở G1 kiểm tra NaN và so điểm fp16 với fp32 trên 20 mẫu.</li>
+<li>Logits của observer (ép float32) chuyển sang GPU của performer theo từng batch; tính xong giải phóng ngay.</li>
+<li>Context 1,024 token; báo cáo % bài bị cắt theo nhãn.</li>
+</ul>
+<div class="chg"><b>Thay đổi:</b> context tăng từ 768 lên 1,024 token; thêm bước kiểm tra fp16; ghi ngân sách GPU cho từng tài khoản.<span class="why"><b>Lý do:</b> bài 650 từ dài hơn 768 token. Phần bị cắt nằm ở cuối bài, và với văn bản Mixed đó chính là phần AI. PhoGPT thường chạy bf16, mà T4 không hỗ trợ bf16.</span></div>
+
+<h3>4.2. Cổng quyết định</h3>
+<div class="scroll"><table class="stack">
+<thead><tr><th>Gate</th><th>Khi nào</th><th>Điều kiện đạt</th><th>Nếu không đạt</th></tr></thead>
+<tbody>
+<tr><td><b>G0</b></td><td>T1, ngày 2</td><td>Đã xác định cột AI của A1 có chứa prompt hay không, và đã xử lý</td><td>Chặn mọi bước sau</td></tr>
+<tr><td><b>G1</b></td><td>Cuối T1</td><td>PhoGPT không NaN ở fp16; ước lượng toàn bộ ≤ 10 giờ; AUROC trên 100 mẫu &gt; 0.8</td><td>Chuyển sang cặp Qwen2.5-1.5B, ghi rõ vấn đề cùng họ với generator</td></tr>
+<tr><td><b>G2</b></td><td>Cuối T1</td><td>vLLM đã pin chạy trên T4; QC 20 mẫu đạt; tốc độ đủ để sinh xong trong ≤ 6 giờ</td><td>Giảm Mixed còn ~1,200 (750 / 170 / 80 / 200); thay Llama bằng SeaLLMs-v3</td></tr>
+<tr><td><b>G3a</b></td><td>T2, ngày 1</td><td>4 probe không cần Mixed ≤ 0.65; <code>validate.py</code> chạy qua</td><td>TV2 chưa trích đặc trưng; sửa trong tối đa 2 ngày</td></tr>
+<tr><td><b>G3b</b></td><td>Giữa T2</td><td>Probe Human vs Mixed và probe ranh giới ≤ 0.65</td><td>Sửa trong tối đa 2 ngày; quá hạn thì đóng băng dữ liệu và ghi probe là giới hạn</td></tr>
+<tr><td><b>G4</b></td><td>Cuối T4</td><td>Chốt model cho demo</td><td>Demo dùng chế độ Fast</td></tr>
+</tbody></table></div>
+
+<h3>4.3. Lưu trữ</h3>
+<div class="scroll"><table class="stack">
+<thead><tr><th>Loại</th><th>Nơi lưu</th><th>Quy tắc</th></tr></thead>
+<tbody>
+<tr><td><code>datasets/</code> thô</td><td>Local của TV1 (gitignored)</td><td>Không upload lại</td></tr>
+<tr><td>Code, plan, <code>sample_debug.jsonl</code></td><td>GitHub</td><td>Không commit file &gt; 10 MB</td></tr>
+<tr><td><code>processed/</code>, <code>calib/</code>, <code>stress_test/</code>, <code>features_cache/</code> (1 file/split, float16), <code>weights/</code></td><td>HF Organization (để private đến khi nộp) + Kaggle Dataset</td><td>Gắn version tag (<code>data-v1</code>…); mọi kết quả ghi version dữ liệu, seed và commit</td></tr>
+</tbody></table></div>
+<p><b><code>data-v1</code></b> gồm Core, Calib và ST1–ST2, được đóng băng giữa Tuần 2 sau G3b. Nếu sau đó cần đổi dữ liệu thì phải tăng version và chạy lại cache; nhờ cache khóa theo hash văn bản, chỉ phần bị đổi phải trích lại. ST3 phát hành riêng dưới tên <code>stress-v1b</code>.</p>
+</section>
+
+<section id="phan-cong">
+<h2>5. Phân công: chốt định dạng trao đổi trước, dữ liệu phát hành theo đợt</h2>
+<h3>5.0. Sáu nguyên tắc để ít phải chờ nhau <span class="tag">Thay đổi</span></h3>
+<ol>
+<li><b>Chốt 3 định dạng trao đổi (gọi là "hợp đồng giao diện") trong 2 ngày đầu:</b>
+<ul>
+<li><b>C1 – Schema dữ liệu:</b> TV1 chốt, giao kèm <code>sample_debug.jsonl</code>.</li>
+<li><b>C2 – Định dạng cache đặc trưng:</b> TV2 chốt, kèm một cache giả ngay ngày 3, để TV3 và TV4 viết sẵn code đọc cache.</li>
+<li><b>C3 – Định dạng file dự đoán:</b> mỗi dòng gồm <code>{sample_id, doc_score, sent_probs[], b_hat}</code>. <code>metrics.py</code> và demo chỉ đọc định dạng này, nên không phụ thuộc vào việc model nào xong trước.</li>
+</ul></li>
+<li><b>Phát hành dữ liệu theo đợt:</b>
+<ul>
+<li><code>sample_500</code> (cuối T1): chỉ gồm bài Train/Val, có khoảng 200 văn bản sinh thật, và các văn bản này được dùng lại trong <code>data-v1</code>.</li>
+<li><code>data-v1a</code> (T2, ngày 1): khoảng 6,000 bài không cần sinh.</li>
+<li><code>data-v1</code> (giữa T2): thêm khoảng 2,550 bài sinh còn lại.</li>
+</ul></li>
+<li><b>Dùng song song 4 tài khoản Kaggle ở Tuần 2:</b> TV1 sinh Qwen; TV4 sinh Llama; TV2 và TV6 mỗi người trích một nửa đặc trưng.</li>
+<li><b>Giảm tải cho TV1 ở Tuần 1–2:</b> ST1–ST2 chuyển sang TV5; <code>validate.py</code>, MinHash và các probe chuyển sang TV6; script sinh chuyển sang TV4.</li>
+<li><b>Cân bằng tải Tuần 3–4:</b> TV2 làm QLoRA và chế độ Lite; TV1 làm biểu đồ, ST3 và bài toán 3 lớp.</li>
+<li><b>Model chỉ cần văn bản thì không chờ đặc trưng:</b> PhoBERT Doc (TV3) và PhoBERT Boundary (TV5) chạy song song với lúc TV2 trích đặc trưng.</li>
+</ol>
+<div class="note"><b>Chống rò rỉ khi tái dùng văn bản sinh sớm:</b>
+<br>• <code>source_article_id</code> của các văn bản sinh sớm được ghi vào <code>reserved_ids.json</code>, để lần chạy <code>preprocess.py</code> sau không rút lại các bài này.
+<br>• <code>validate.py</code> kiểm tra mỗi bài gốc chỉ xuất hiện <b>đúng một lần</b> trên toàn bộ dữ liệu.
+<br>• <b>Không ai đọc <code>test</code>, <code>calib</code>, <code>stress</code> trước Tuần 5</b>; mọi việc chọn siêu tham số chỉ dùng train/val.</div>
+<div class="chg"><b>Thay đổi:</b> plan cũ để TV1 ôm toàn bộ dữ liệu (làm sạch, sinh, Stress-Test, kiểm tra), và mọi người chờ đến khi có bộ dữ liệu đầy đủ.<span class="why"><b>Lý do (theo yêu cầu chia việc ít chờ nhau):</b>
+<br>• Ở bản cũ, TV2, TV3 và TV4 đều đứng chờ TV1 suốt Tuần 1–2.
+<br>• Ở bản mới, mỗi người luôn có việc trên dữ liệu thật hoặc dữ liệu giả.
+<br>• Phần trích đặc trưng lớn nhất (khoảng 70%) bắt đầu trước khi văn bản sinh xong.</span></div>
+
+<h3>Bảng bàn giao</h3>
+<div class="scroll"><table class="stack">
+<thead><tr><th>Người</th><th>Cần</th><th>Từ</th><th>Có lúc</th><th>Trong lúc chờ làm</th></tr></thead>
+<tbody>
+<tr><td>TV4</td><td>Mồi QC (20 mẫu Llama)</td><td>TV1</td><td>T1, ngày 4</td><td>Pin vLLM, sửa script sinh</td></tr>
+<tr><td>TV1, TV4</td><td><code>prompts_to_generate.jsonl</code></td><td>TV1</td><td>T2, ngày 1</td><td>Sinh <code>sample_500</code></td></tr>
+<tr><td>TV2, TV6</td><td>Văn bản đã qua G3a</td><td>TV1, TV5</td><td>T2, ngày 1</td><td>Đo đạc G1 trên <code>sample_500</code></td></tr>
+<tr><td>TV3 (PhoBERT Doc)</td><td><code>data-v1</code></td><td>TV1</td><td>Giữa T2</td><td>Debug trên phần train/val của <code>sample_500</code>, <code>data-v1a</code></td></tr>
+<tr><td>TV3 (Hybrid)</td><td>Cache thật</td><td>TV2</td><td>Cuối T2</td><td>Cache giả (C2), PhoBERT Doc</td></tr>
+<tr><td>TV4 (SeqXGPT)</td><td>Cache có Mixed</td><td>TV2</td><td>Cuối T2</td><td>Sinh Llama, <code>smoothing.py</code>, căn token–câu</td></tr>
+<tr><td>TV5</td><td><code>data-v1</code></td><td>TV1</td><td>Giữa T2</td><td>ST1–ST2, <code>metrics.py</code> chạy trên dự đoán giả</td></tr>
+<tr><td>TV2 (QLoRA, Lite)</td><td>Code Hybrid/SeqXGPT</td><td>TV3, TV4</td><td>T3</td><td>Chọn ngưỡng cho zero-shot</td></tr>
+<tr><td>TV6</td><td>Checkpoint</td><td>TV3/4/5</td><td>T4</td><td>QA dữ liệu, trích đặc trưng, demo chạy với model giả</td></tr>
+</tbody></table></div>
+
+<h3>TV1 — Data Engineer, Mixed-Text Pipeline (đường găng)</h3>
+<ul>
+<li><b>Việc chính:</b> G0; làm sạch theo 3.2; rút Core + Calib; sinh Qwen và ghép.</li>
+<li><b>Sửa code</b> (<code>preprocess.py</code>, <code>merge_generated.py</code>, <code>text_utils.py</code>):
+<ul>
+<li>Cắt đầu đối xứng và chuẩn hóa ký tự.</li>
+<li>Viết <code>length_ok()</code> chung.</li>
+<li>Mở rộng pool Wiki/Books.</li>
+<li>Thêm Wiki/Books vào mồi AI-Qwen; thêm phần OOD bổ sung.</li>
+<li>Đổi quy ước sang <i>b</i> = N; viết <code>reserved_ids.json</code>; sinh dư 20%.</li>
+</ul></li>
+<li><b>Tuần 3–4:</b> <code>breakdown_plots.py</code>, ST3 (<code>stress-v1b</code>), bài toán 3 lớp, thống kê dữ liệu cho báo cáo.</li>
+<li><b>Bàn giao:</b> C1 + <code>sample_debug</code> (T1 ngày 2–3) → mồi QC (ngày 4) → <code>sample_500</code> (cuối T1) → <code>data-v1a</code> + prompts (T2 ngày 1) → <code>data-v1</code> (giữa T2).</li>
+<li><b>Bảng thống kê cho báo cáo:</b> số mẫu theo nhãn × miền × bin độ dài × generator; phân bố vị trí ranh giới <i>b/N</i>; tỷ lệ mẫu bị loại ở từng bước lọc, theo từng generator.</li>
+</ul>
+
+<h3>TV2 — Zero-shot và trích đặc trưng</h3>
+<ul>
+<li><b>VietBinoculars</b>, theo đúng code chính thức: observer <i>M</i><sub>1</sub> = PhoGPT-4B, performer <i>M</i><sub>2</sub> = PhoGPT-4B-Chat. Điểm <span class="m">B = log PPL<sub>M2</sub> / log X-PPL<sub>M1,M2</sub></span>, trong đó:
+<ul>
+<li>PPL tính trên performer;</li>
+<li>X-PPL tính bằng <span class="m">−(1/L) Σ<sub>t</sub> Σ<sub>v</sub> p<sub>M1</sub>(v) log p<sub>M2</sub>(v)</span>;</li>
+<li>điểm thấp nghĩa là văn bản AI.</li>
+</ul></li>
+<li><b>Fast-DetectGPT analytic, cấu hình chuẩn một model:</b> PhoGPT-4B vừa sinh mẫu vừa chấm điểm. Điểm <span class="m">Σ<sub>t</sub>(log p(x<sub>t</sub>) − μ̃<sub>t</sub>) / √Σ<sub>t</sub>σ̃<sub>t</sub>²</span>. Phải rút gọn ngay khi logits còn trên GPU.</li>
+<li><b>Baseline:</b> Likelihood, LogRank, Entropy (tính trên performer).</li>
+<li><b>Cache cho mỗi token:</b>
+<ul>
+<li><code>logp_M1</code>, <code>logp_M2</code>: log-prob của token thật dưới từng model;</li>
+<li><code>xent_12</code> = −Σ<sub>v</sub> p<sub>M1</sub>(v) log p<sub>M2</sub>(v);</li>
+<li><code>ent_1</code>, <code>ent_2</code>: entropy của <i>M</i><sub>1</sub> và <i>M</i><sub>2</sub>;</li>
+<li><code>var_1</code> = σ̃<sub>t</sub>² của <i>M</i><sub>1</sub>;</li>
+<li><code>rank_M2</code>, và <code>char_offsets</code> = (start, end) trên <code>full_text</code>.</li>
+</ul>
+Kiểu float16, mỗi split một file; mỗi bài khóa bằng <code>sample_id</code> + hash văn bản; bài dài hơn 1,024 token được cắt và gắn cờ <code>truncated</code>.</li>
+<li><b>Kiểm tra cache:</b> tính lại điểm Binoculars và Fast-DetectGPT từ cache, so với điểm tính trực tiếp; sai số phải dưới 1e-2.</li>
+<li><b>Cặp Qwen2.5-0.5B / 0.5B-Instruct:</b> trích cùng bộ đặc trưng, dùng cho chế độ Lite.</li>
+<li><b>Ngưỡng:</b> Youden và closest-to-(0,1) chọn trên Val core; ngưỡng 1% FPR chọn trên Val-Calib. Đóng băng ngưỡng trước khi chạy Test.</li>
+<li><b>Thứ tự trích:</b> cache giả (T1 ngày 3) → <code>sample_500</code> → <code>data-v1a</code> (~6,000 bài) → phần sinh (~2,550) → <code>stress-v1b</code>. Ghi theo đợt 500 bài; xong đợt nào đẩy ngay lên Kaggle Dataset đợt đó.</li>
+<li><b>Tuần 3–4:</b> QLoRA (P1): <code>Qwen2.5-1.5B</code>, 4-bit NF4, <code>r=16</code>, <code>lora_alpha=32</code>, <code>AutoModelForSequenceClassification</code>, xếp hạng trên OOD; chế độ Lite (Hybrid/SeqXGPT huấn luyện trên cache Qwen-0.5B).</li>
+</ul>
+<div class="chg"><b>Thay đổi:</b> plan cũ tính Fast-DetectGPT chéo trên cặp observer/performer, đưa điểm Fast-DetectGPT thô vào Hybrid, và cache có trường trùng lặp.<span class="why"><b>Lý do:</b>
+<br>• Bản tính chéo trùng về mặt toán học với X-PPL của Binoculars, nên không phải một baseline độc lập.
+<br>• Điểm Fast-DetectGPT thô tăng theo √L, tức là đưa lại độ dài vào Hybrid, đúng thứ plan đã cấm.
+<br>• Baseline Entropy cần <code>ent_2</code>, mà sau khi xóa logits thì không tính lại được.</span></div>
+
+<h3>TV3 — Supervised Doc-level và Hybrid</h3>
+<ul>
+<li><b>PhoBERT Doc:</b> <code>phobert-base-v2</code>, tách từ bằng <code>pyvi</code> (dùng cùng công cụ ở train và demo). Cửa sổ trượt 256 subword, stride 128, tối đa 6 cửa sổ. Gộp bằng attention pooling, chuẩn hóa theo số cửa sổ, để mô hình không đếm được số cửa sổ (tức là độ dài). Chạy 3 seed, báo cáo mean ± std.</li>
+<li><b>Hybrid, huấn luyện end-to-end:</b> PhoBERT và nhánh <i>f</i><sub>stat</sub> được huấn luyện cùng lúc.
+<ul>
+<li><i>f</i><sub>stat</sub> <b>chỉ gồm các đại lượng trung bình theo token:</b> điểm Binoculars; Fast-DetectGPT đã chia theo độ dài; mean/std log-prob theo câu; chênh lệch giữa nửa đầu và nửa sau bài; độ sụt log-prob lớn nhất giữa hai câu liền kề.</li>
+<li><b>Cấm</b> mọi đặc trưng độ dài (<code>num_tokens</code>, <code>num_sentences</code>, <code>char_len</code>) và mọi tổng chưa chia cho độ dài.</li>
+<li>Chuẩn hóa <i>f</i><sub>stat</sub> bằng mean/std tính trên Train.</li>
+</ul></li>
+<li><b>Ablation:</b> chỉ PhoBERT / chỉ <i>f</i><sub>stat</sub> (LogReg, LightGBM) / Hybrid.</li>
+<li><b>Early stopping và chọn model</b> trên Val core.</li>
+</ul>
+<div class="chg"><b>Thay đổi:</b> plan cũ ghép <i>h</i><sub>doc</sub> với <i>f</i><sub>stat</sub> qua một MLP mà không nói <i>h</i><sub>doc</sub> lấy từ đâu. QLoRA chuyển từ TV3 sang TV2.<span class="why"><b>Lý do:</b>
+<br>• Nếu <i>h</i><sub>doc</sub> lấy từ một PhoBERT đã fine-tune trên chính tập Train, vector này gần như tách hoàn hảo hai lớp trên Train. MLP sẽ bỏ qua <i>f</i><sub>stat</sub>, làm lệch kết quả ablation.
+<br>• Riêng việc ở Tuần 4 của TV3 đã quá tải.</span></div>
+
+<h3>TV4 — Boundary hướng SeqXGPT và decoding</h3>
+<ul>
+<li><b>Tuần 1–2:</b>
+<ul>
+<li>Sở hữu script sinh: pin vLLM, sửa script, QC Llama.</li>
+<li>Sinh Llama: 100 AI + 400 Mixed, cộng thêm 20% dư.</li>
+<li>Viết <code>smoothing.py</code> và bộ căn token–câu trên cache của <code>sample_500</code>.</li>
+</ul></li>
+<li><b>Căn token vào câu</b> bằng <code>char_offsets</code> + <code>sentence_char_spans</code>; token nằm vắt qua 2 câu thì gán cho câu chứa ký tự đầu của nó.</li>
+<li><b>Mô hình:</b> đặc trưng token → 1D-CNN → pooling theo câu → BiLSTM 2 lớp → xác suất AI của từng câu <i>p<sub>j</sub></i>. Loss BCE theo câu, có mask cho các câu padding. Viết unit test cho bước căn token–câu trên <code>sample_debug</code>.</li>
+<li><b><code>smoothing.py</code></b>: chọn <span class="m">b̂ = argmax<sub>b</sub> Σ<sub>j&lt;b</sub> log(1−p<sub>j</sub>) + Σ<sub>j≥b</sub> log p<sub>j</sub></span>, tính trong O(N) bằng prefix sum. Kẹp <i>p<sub>j</sub></i> vào [10<sup>−6</sup>, 1 − 10<sup>−6</sup>] trước khi lấy log. Hàm trả về cả <i>b̂</i> và nhãn câu sau làm mượt. So sánh với phương án không làm mượt (ngưỡng 0.5 cho từng câu). Moving average để P2.</li>
+</ul>
+
+<h3>TV5 — Boundary hướng PhoBERT, trưởng nhóm đánh giá</h3>
+<ul>
+<li><b>Tuần 1–2:</b> chốt C3; dựng ST1–ST2; viết <code>metrics.py</code> + <code>bootstrap.py</code> chạy trên dự đoán giả.</li>
+<li><b>PhoBERT nhiều câu:</b> cửa sổ 3–5 câu ≤ 256 subword, stride 1 câu. Biểu diễn mỗi câu là trung bình các token của câu đó; câu nằm trong nhiều cửa sổ thì lấy trung bình giữa các cửa sổ. Sau đó qua BiLSTM rồi <code>smoothing.py</code>. Ensemble với SeqXGPT để P2.</li>
+<li><b>Metrics Doc:</b>
+<ul>
+<li>AUROC.</li>
+<li>Macro-F1, Accuracy và Balanced Accuracy tại ngưỡng Youden chọn từ Val.</li>
+<li>TPR@1%FPR và FPR theo miền, tính trên 820 bài Người.</li>
+<li>Luôn ghi số mẫu của từng lớp cạnh F1.</li>
+</ul></li>
+<li><b>Metrics Boundary:</b>
+<ul>
+<li>Sentence-F1: micro-F1 trên mọi câu, lớp dương là AI.</li>
+<li>MAE và Acc@k (k ∈ {0, 1, 2}), chỉ tính trên Mixed.</li>
+<li>Pure-doc accuracy: tỷ lệ bài thuần được đoán đúng <i>b</i> = N (Người) hoặc <i>b</i> = 0 (AI).</li>
+</ul></li>
+<li><b>Baseline tầm thường:</b> <span class="m">b̂ = round(0.5N)</span> và <span class="m">round(median(b/N)·N)</span>. <b>Kiểm tra sanity:</b> huấn luyện với nhãn bị xáo trộn thì AUROC phải về ≈ 0.5.</li>
+<li><b>Bootstrap:</b> 1,000 lần, lấy mẫu lại theo tài liệu, phân tầng theo lớp, giữ ngưỡng cố định. So sánh hai model bằng <b>paired bootstrap</b> trên cùng các lần lấy mẫu, báo cáo khoảng tin cậy của hiệu số.</li>
+<li><b>Breakdown:</b>
+<ul>
+<li>theo độ dài: dưới 250, 250–450, trên 450 token;</li>
+<li>theo miền: news, wiki, books;</li>
+<li>theo generator × <code>doc_type</code>;</li>
+<li>theo vị trí ranh giới <i>b/N</i>: dưới 0.4, 0.4–0.6, trên 0.6.</li>
+</ul></li>
+<li><b>Chạy đánh giá ST1–ST3</b> (chỉ Doc-level).</li>
+</ul>
+<div class="chg"><b>Thay đổi:</b> plan cũ chưa định nghĩa Sentence-F1, cách bootstrap, ngưỡng cho F1, và chưa có baseline tầm thường. <code>metrics.py</code> giao cho cả TV5 lẫn TV6.<span class="why"><b>Lý do:</b>
+<br>• Nếu không dùng paired bootstrap, hai khoảng tin cậy chồng nhau không chứng minh được model nào tốt hơn.
+<br>• Người chấm cần mốc so sánh để biết MAE thế nào là tốt.
+<br>• Hai người cùng sở hữu một file dễ gây xung đột.</span></div>
+
+<h3>TV6 — MLOps, QA dữ liệu và Web Demo</h3>
+<ul>
+<li><b>Tuần 1–2:</b> viết <code>validate.py</code> (schema, nhãn câu, span, bài gốc xuất hiện đúng một lần, MinHash) và <code>probes.py</code>; chạy G3a/G3b; trích một nửa đặc trưng PhoGPT.</li>
+<li><b>Gradio:</b>
+<ul>
+<li>Chuẩn hóa ký tự đầu vào; từ chối văn bản dưới 50 từ hoặc dưới 3 câu.</li>
+<li>Hiển thị điểm tổng và nhãn Người / Lai / AI; tô màu từng câu; chỉ ra "Ranh giới ước lượng: câu X".</li>
+<li>Gán nhãn "Lai" khi Doc = AI và 0 &lt; <i>b̂</i> &lt; N.</li>
+<li><b>Luôn hiển thị disclaimer:</b> <i>"Kết quả mang tính xác suất, chỉ để tham khảo sàng lọc, không dùng làm bằng chứng duy nhất để kết luận gian lận."</i></li>
+<li>Có sẵn các mẫu thử: Người, AI, Mixed.</li>
+<li>Ẩn những chế độ mà máy hiện tại không chạy được.</li>
+</ul></li>
+<li><b>Demo dựng sớm với model giả</b> theo định dạng C3; có checkpoint thì thay bằng model thật.</li>
+<li><code>scripts/download_weights.py</code>:
+<ul>
+<li>dùng <code>snapshot_download()</code> tải từ HF Model Repo vào volume lúc khởi động, không nhúng weights vào image;</li>
+<li>nếu repo private thì đọc <code>HF_TOKEN</code> từ <code>.env</code> (có <code>.env.example</code>).</li>
+</ul></li>
+<li><code>Dockerfile</code> dùng torch bản CPU và <code>pyvi</code>. <code>docker compose up --build</code> mở <code>http://localhost:7860</code>; <code>--profile gpu</code> dùng một CUDA image riêng cho chế độ Full.</li>
+<li>Pin phiên bản trong <code>requirements.txt</code>; smoke test chế độ Fast trên <code>sample_debug.jsonl</code>.</li>
+<li>Review code <code>src/evaluation/</code> (TV5 là người sở hữu).</li>
+</ul>
+<div class="scroll"><table class="stack">
+<thead><tr><th>Chế độ</th><th>Model</th><th>Yêu cầu</th></tr></thead>
+<tbody>
+<tr><td><b>Fast</b> (mặc định)</td><td>PhoBERT Doc + PhoBERT Boundary + decoding</td><td>CPU, ~2 GB RAM</td></tr>
+<tr><td><b>Lite</b> (P1)</td><td>Hybrid Lite + SeqXGPT Lite, huấn luyện riêng trên đặc trưng Qwen-0.5B</td><td>CPU, ~5 GB RAM</td></tr>
+<tr><td><b>Full</b> (P2)</td><td>Hybrid + SeqXGPT trên đặc trưng PhoGPT-4B</td><td>GPU ≥ 24 GB. Chỉ bật 8-bit nếu AUROC trên Val giảm dưới 0.01</td></tr>
+</tbody></table></div>
+<div class="chg"><b>Thay đổi:</b> plan cũ cho Mode 2 dùng đặc trưng Qwen-0.5B để chạy những model vốn được huấn luyện trên đặc trưng PhoGPT, và ước tính chỉ tốn ~1 GB RAM.<span class="why"><b>Lý do:</b>
+<br>• Hai họ model cho log-prob ở hai thang đo khác nhau, nên kết quả sẽ vô nghĩa.
+<br>• Hai model Qwen-0.5B ở fp32 thực tế cần khoảng 4–5 GB RAM.
+<br>• Hai model PhoGPT-4B ở fp16 không vừa một GPU 16 GB.</span></div>
+</section>
+
+<section id="repo">
+<h2>6. Cấu trúc repository</h2>
+<pre class="scroll"><code>DL_Project/
+├── datasets/                     # [gitignored] 9 bộ dữ liệu thô
+├── data/sample_debug.jsonl       # [GitHub] ~20 mẫu
+├── data/{processed,calib,stress_test,features_cache}/   # [HF / Kaggle]
+├── src/
+│   ├── data/       preprocess.py · merge_generated.py · text_utils.py · validate.py · probes.py · dataset.py
+│   ├── models/     zeroshot.py · doc_classifier.py · boundary_seqxgpt.py · boundary_phobert.py · smoothing.py
+│   └── evaluation/ metrics.py · bootstrap.py · breakdown_plots.py
+├── scripts/        download_data.py · kaggle_vllm_generate.py · extract_features.py · download_weights.py · entrypoint.sh
+├── app/            main.py · inference_pipeline.py
+└── Dockerfile · docker-compose.yml · requirements.txt · .env.example · README.md · dataset_sources.txt</code></pre>
+<p>Gộp <code>dataset_download.py</code> và <code>scripts/download_data.py</code> làm một, vì hai file đang trùng chức năng.</p>
+</section>
+
+<section id="lo-trinh">
+<h2>7. Lộ trình theo tuần</h2>
+<div class="scroll"><table class="stack">
+<thead><tr><th>Tuần</th><th>Mốc</th><th>Công việc</th></tr></thead>
+<tbody>
+<tr><td><b>1</b></td><td>Chốt định dạng trao đổi + đo đạc</td><td><b>Cả nhóm (ngày 1–2):</b> xác nhận phạm vi với GVHD, tạo HF Org, chốt C1/C2/C3. <b>TV1:</b> G0, <code>sample_debug</code>, mồi QC, sửa code, sinh <code>sample_500</code> cùng TV4. <b>TV2:</b> cache giả, PhoGPT 100 mẫu → G1, cache <code>sample_500</code>. <b>TV3:</b> PhoBERT Doc trên <code>sample_debug</code>. <b>TV4:</b> pin vLLM, sửa script, QC → G2, <code>smoothing.py</code>. <b>TV5:</b> <code>metrics.py</code>, ST1–ST2. <b>TV6:</b> <code>validate.py</code>, probe, khung Gradio + Dockerfile.</td></tr>
+<tr><td><b>2</b></td><td><code>data-v1a</code> → <code>data-v1</code> + cache</td><td><b>Ngày 1:</b> giao <code>data-v1a</code> + prompts; TV6 chạy G3a. <b>Ngày 1–3:</b> TV2 + TV6 trích đặc trưng <code>data-v1a</code>; TV1 sinh Qwen, TV4 sinh Llama. <b>Giữa tuần:</b> ghép, G3b, đóng băng <code>data-v1</code>. <b>Cuối tuần:</b> trích đặc trưng phần sinh; có kết quả zero-shot. TV3 chạy PhoBERT Doc, TV5 chạy PhoBERT Boundary trên <code>data-v1</code>.</td></tr>
+<tr><td><b>3</b></td><td>Baseline</td><td><b>TV2:</b> chọn ngưỡng, bắt đầu QLoRA. <b>TV3:</b> PhoBERT Doc xong, bắt đầu Hybrid. <b>TV4:</b> SeqXGPT. <b>TV5:</b> PhoBERT Boundary xong, đánh giá. <b>TV6:</b> chế độ Fast, <code>download_weights.py</code>. <b>TV1:</b> biểu đồ, ST3 → <code>stress-v1b</code>.</td></tr>
+<tr><td><b>4</b></td><td>Hybrid + decoding + chốt demo</td><td><b>TV3:</b> Hybrid + ablation. <b>TV4/TV5:</b> decoding, so sánh trước và sau. <b>TV2:</b> QLoRA, chế độ Lite. <b>TV1:</b> bài toán 3 lớp. <b>TV6:</b> chế độ Lite. <b>G4</b>; đẩy checkpoint lên HF.</td></tr>
+<tr><td><b>5</b></td><td>Đánh giá toàn diện</td><td><b>TV5</b> chủ trì, cùng <b>TV1</b> và <b>TV2</b>: ID/OOD, Calib, ST1–ST3, breakdown, paired bootstrap. <b>TV6:</b> tích hợp demo. Mỗi người viết phần báo cáo của mình.</td></tr>
+<tr><td><b>6</b></td><td>Buffer</td><td>Xử lý phần trễ; thử Docker trên một máy CPU sạch; làm báo cáo, slide và video dự phòng.</td></tr>
+</tbody></table></div>
+<p>Mọi script nhận đường dẫn dữ liệu qua tham số, nên chuyển từ <code>sample_500</code> sang <code>data-v1</code> không cần sửa code.</p>
+</section>
+
+<section id="rui-ro">
+<h2>8. Rủi ro và phương án</h2>
+<div class="scroll"><table class="stack">
+<thead><tr><th>Rủi ro</th><th>Dấu hiệu</th><th>Phương án</th></tr></thead>
+<tbody>
+<tr><td>Văn bản AI của A1 còn chứa prompt</td><td>G0</td><td>Cắt prompt theo ký tự trước mọi bước</td></tr>
+<tr><td>PhoGPT chậm hoặc ra NaN ở fp16</td><td>G1</td><td>Chuyển sang cặp Qwen2.5-1.5B, xếp hạng trên OOD</td></tr>
+<tr><td>vLLM không chạy trên T4, hoặc sinh quá chậm</td><td>G2</td><td>Pin phiên bản khác; giảm Mixed; dùng HF <code>generate</code> làm dự phòng cuối</td></tr>
+<tr><td>Vẫn còn đường tắt trong dữ liệu</td><td>G3a / G3b</td><td>Sửa dữ liệu trong tối đa 2 ngày</td></tr>
+<tr><td>Hết giờ GPU</td><td>Dùng quá 70% quota trước Tuần 4</td><td>Cắt P2, rồi đến P1</td></tr>
+<tr><td>Thành viên trễ việc</td><td>Chậm mốc quá 3 ngày</td><td>Cắt P2/P1 trước; dùng Tuần 6 buffer</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="nghiem-thu">
+<h2>9. Checklist nghiệm thu</h2>
+<ul>
+<li>☐ Các gate G0–G3b đều đạt; <code>data-v1</code> đã đóng băng và qua <code>validate.py</code>; kết quả probe có trong phụ lục.</li>
+<li>☐ Không có bài gốc hay bài gần trùng nằm ở hai tập; generator OOD chỉ có ở Test; họ Vũ Trọng Phụng chỉ có ở Stress-Test.</li>
+<li>☐ <b>Doc-level:</b> Zero-shot, PhoBERT, Hybrid (+ QLoRA), tách ID/OOD, có CI 95% và paired bootstrap, có ablation.</li>
+<li>☐ <b>Boundary:</b> SeqXGPT và PhoBERT, trước và sau decoding, so với baseline tầm thường.</li>
+<li>☐ TPR@1%FPR với ngưỡng chọn trên Val-Calib; FPR theo miền, tính trên 820 bài Người.</li>
+<li>☐ Có kết quả ST1, ST2 (+ ST3).</li>
+<li>☐ Demo đủ tính năng; mỗi chế độ dùng đúng model của nó; Docker chạy được trên máy CPU sạch.</li>
+<li>☐ Mọi kết quả ghi version dữ liệu, seed và commit; các giới hạn được nêu trong báo cáo.</li>
+</ul>
+</section>
+
+<section id="phu-luc">
+<h2>Phụ lục A. Bảng 28 thay đổi so với plan trên repo</h2>
+<div class="scroll"><table class="stack">
+<thead><tr><th class="n">#</th><th>Mục</th><th>Plan trên repo</th><th>v3</th><th>Lý do</th></tr></thead>
+<tbody id="chg"></tbody>
+</table></div>
+</section>
+
+<section id="review">
+<h2>Nhật ký review: số vấn đề giảm qua từng vòng</h2>
+<p>Một subagent review độc lập được giao đọc plan, đối chiếu với code trong repo (<code>preprocess.py</code>, <code>merge_generated.py</code>, <code>kaggle_vllm_generate.py</code>) và tìm lỗi. Sau mỗi vòng, plan được sửa rồi gửi lại cho reviewer kiểm tra.</p>
+<div class="rounds">
+<div><b>20</b> vấn đề<p><b>Vòng 1.</b> Gồm 2 lỗi nghiêm trọng:
+<br>• Văn bản AI của A1 có thể còn chứa prompt.
+<br>• Miền văn bản và generator lộ nhãn trong tập OOD.
+<br>Ngoài ra có 13 lỗi lớn: độ dài lệch theo nhãn, kiểu ký tự lệch, dấu cách cuối prompt, context 768, Fast-DetectGPT trùng với Binoculars, bộ nhớ demo, định nghĩa metric…</p></div>
+<div><b>14</b> vấn đề<p><b>Vòng 2.</b> Cả 20 lỗi cũ đã được sửa. Vấn đề mới tập trung vào lịch:
+<br>• <code>sample_500</code> chưa có văn bản sinh thật.
+<br>• TV2 trích đặc trưng trước khi G3 chạy xong.
+<br>• Tuần 1 của TV1 quá tải; Tuần 3–4 lệch tải.
+<br>Thêm một số lỗi số liệu: pool Wiki thiếu, Hybrid học trên <i>h</i><sub>doc</sub> đã overfit.</p></div>
+<div><b>3</b> vấn đề + lỗi nhỏ<p><b>Vòng 3.</b> 11 trong 14 vấn đề đã sửa xong. Còn lại:
+<br>• Rò rỉ bài gốc khi tái dùng văn bản sinh sớm.
+<br>• Chọn siêu tham số trên dữ liệu test.
+<br>• ST3 làm thay đổi dữ liệu đã đóng băng.
+<br>Cả ba đã được sửa. <b>Kết luận của reviewer:</b> sẵn sàng giao cho nhóm.</p></div>
+</div>
+<footer>File nguồn: <code>Detailed_Project_Plan_v3.md</code> ở thư mục gốc repo (chưa commit). So sánh với <code>Detailed_Project_Plan.md</code> trên <code>main</code> (commit 6e90c02).</footer>
+</section>
+
+</div>
+</main>
+
+<script>
+{
+const G=[
+ ["TV1","Dữ liệu",[[1,2,"c","Làm sạch, G0, sample_500"],[3,4,"c","Sinh Qwen, ghép, data-v1"],[5,6,"p","Biểu đồ, ST3"],[7,8,"p","3 lớp, thống kê"],[9,10,"e","Đánh giá"],[11,12,"q","Báo cáo"]]],
+ ["TV2","Zero-shot, đặc trưng",[[1,2,"s","G1, cache giả"],[3,4,"c","Trích đặc trưng"],[5,6,"s","Ngưỡng, QLoRA"],[7,8,"p","QLoRA, Lite"],[9,10,"e","Đánh giá"],[11,12,"q","Báo cáo"]]],
+ ["TV3","Doc, Hybrid",[[1,2,"s","PhoBERT Doc (mẫu)"],[3,4,"s","PhoBERT Doc"],[5,6,"c","Hybrid"],[7,8,"c","Hybrid, ablation"],[9,10,"s","Checkpoint"],[11,12,"q","Báo cáo"]]],
+ ["TV4","Boundary SeqXGPT",[[1,2,"s","Script sinh, G2"],[3,4,"s","Sinh Llama"],[5,6,"c","SeqXGPT"],[7,8,"s","Decoding"],[9,10,"s","Checkpoint"],[11,12,"q","Báo cáo"]]],
+ ["TV5","Boundary PhoBERT, đánh giá",[[1,2,"s","metrics, ST1–2"],[3,4,"s","PhoBERT Boundary"],[5,6,"s","Boundary, đánh giá"],[7,8,"s","Decoding"],[9,10,"e","Đánh giá toàn diện"],[11,12,"q","Báo cáo"]]],
+ ["TV6","QA dữ liệu, demo",[[1,2,"e","validate, probe"],[3,4,"c","G3, trích ½"],[5,6,"s","Mode Fast"],[7,8,"p","Mode Lite"],[9,10,"s","Tích hợp demo"],[11,12,"q","Docker"]]]
+];
+const esc=t=>String(t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let h='<div class="h"></div>'+[1,2,3,4,5,6].map(w=>`<div class="h wk">Tuần ${w}</div>`).join('');
+for(const[n,r,bs]of G){
+ h+=`<div class="who">${esc(n)}<small>${esc(r)}</small></div><div class="row">`+bs.map(([a,b,c,t])=>`<div class="bar ${c}" style="grid-column:${a}/${b+1}" title="${esc(t)}">${esc(t)}</div>`).join('')+'</div>';
+}
+document.getElementById('gantt').innerHTML=h;
+
+const C=[
+["Prompt trong văn bản AI của A1","Không đề cập","Gate G0: kiểm tra rồi cắt prompt","Code đọc generated_text cho A1 nhưng cột _wo_prompt cho VTP; nếu còn prompt, câu Người bị gán nhãn AI"],
+["Mở đầu văn bản","Chỉ cắt câu cụt ở văn bản AI","Cắt đầu đối xứng cho mọi văn bản Người từ A1/Wiki","Văn bản AI luôn bắt đầu giữa bài, nên mô hình học vị trí thay vì văn phong"],
+["Chuẩn hóa ký tự","NFC + bỏ markdown","Thống nhất ngoặc, gạch, ba chấm, khoảng trắng","Kiểu dấu câu của báo chí và LLM khác nhau, lộ cả ranh giới Mixed"],
+["Lọc độ dài","Mỗi script một ngưỡng (110–950 từ, 3–28 câu)","Một length_ok() chung: 6–24 câu, 150–650 từ","Ngưỡng khác nhau theo nhãn tạo đường tắt độ dài"],
+["Miền theo nhãn","AI thuần và OOD Human chỉ có News","Mọi nhãn đều có News/Wiki/Books","Miền văn bản lộ nhãn"],
+["Generator OOD","Gemma chỉ AI thuần, Llama chỉ Mixed","+100 AI thuần Llama; báo cáo generator × loại văn bản","Tách được tác động của generator khỏi tác động của loại văn bản"],
+["Số mẫu","~300 Gemma / ~600 Llama, Human chia đều (không khớp code)","Bảng 3.3 khớp code; tổng 5,490","Plan và code phải dùng cùng một bộ số liệu"],
+["Sinh dư","Sinh đúng số lượng","Sinh dư 20% rồi lấy mẫu xuống","Hậu xử lý loại mẫu mà không bù"],
+["Tham số sinh","Plan: 4-bit + Assistant Prefill, Llama gated. Code: tự chuyển 4-bit khi 1 GPU, top_p/penalty khác plan","Theo code; mirror unsloth; cấm tự chuyển 4-bit; pin vLLM","4-bit làm đổi phân phối văn bản mà không được ghi lại; vLLM mới có thể không chạy trên T4"],
+["Prompt và hậu xử lý","Prompt kết thúc bằng dấu cách; không cắt phần lạc đề","Bỏ dấu cách cuối; cắt tại \\n\\n hoặc tiêu đề; thêm regex","Dấu vết token tại ranh giới; base model viết lan sang bài khác"],
+["Kiểm tra đường tắt","Không có","5 probe ở G3a/G3b","Chứng minh mô hình không học đường tắt"],
+["Đo FPR","TPR@1%FPR trên ~320 bài Người, kèm 0.06%","Thêm 1,000 bài Calib; bỏ 0.06%; bootstrap CI","1% FPR chỉ là 2–3 mẫu; 0.06% không đo được"],
+["Context PhoGPT","768 token","1,024 token","Phần bị cắt là đuôi bài, đúng phần AI của Mixed"],
+["Fast-DetectGPT","Tính chéo; cache trùng","Cấu hình chuẩn một model; cache không trùng","Bản tính chéo trùng toán học với X-PPL"],
+["Đặc trưng Hybrid","Dùng điểm Fast-DetectGPT thô","Chỉ dùng đại lượng trung bình theo token","Điểm thô tăng theo √L, đưa độ dài vào lại"],
+["Quy ước ranh giới","Schema dùng −1, công thức dùng b = N","b ∈ {0..N}, sửa cả hai file code","Hai quy ước mâu thuẫn nhau"],
+["Metrics","Chưa định nghĩa","Định nghĩa đủ; paired bootstrap; baseline tầm thường; sanity","So sánh model có ý nghĩa thống kê"],
+["Demo","Chạy model PhoGPT bằng đặc trưng Qwen-0.5B; ~1 GB RAM","3 chế độ, mỗi chế độ một model riêng; bộ nhớ thực tế","Lệch thang đo đặc trưng; ước tính RAM sai"],
+["Cùng họ model","Chỉ nêu cho QLoRA","Nêu cho mọi detector họ Qwen; xếp hạng trên OOD","Điểm in-domain bị thổi phồng"],
+["Ưu tiên và cổng","Mọi hạng mục ngang nhau","P0/P1/P2 + Gate G0–G4","Biết trước sẽ cắt gì khi trễ"],
+["Stress-Test","TV1 dựng ở Tuần 2, chưa cắt đầu đối xứng","TV5 dựng ST1–ST2 trong data-v1a; ST3 thành stress-v1b","Tránh kết quả bị thổi phồng; giảm tải TV1"],
+["Khử trùng lặp","So 80 ký tự đầu, chỉ Stress với Train/Val","MinHash giữa mọi cặp tập","Đầu bài đã bị cắt; cùng một sự kiện có thể nằm ở nhiều file A1"],
+["Ngưỡng và chọn model","Cùng dùng Val","Chọn model trên Val core; ngưỡng 1% FPR trên Val-Calib","Tránh thiên lệch chọn lựa"],
+["Sở hữu metrics.py","Cả TV5 và TV6","TV5 sở hữu, TV6 review","Tránh xung đột"],
+["Hybrid","MLP trên h_doc ‖ f_stat, không nói h_doc lấy từ đâu","Huấn luyện end-to-end","h_doc đã overfit trên Train khiến MLP bỏ qua f_stat"],
+["Pool Wiki/Books","Không nêu kích thước","700/200/300 và 450/150/200, đếm sau khi lọc","Code hiện tại thiếu khoảng 17 bài Wiki cho test"],
+["Chia việc và lịch","TV1 ôm toàn bộ dữ liệu; mọi người chờ bộ dữ liệu đầy đủ","3 định dạng trao đổi chốt sớm; dữ liệu theo đợt; chuyển việc sang TV4/5/6; G3 tách đôi","Rút ngắn đường găng, mỗi người luôn có việc"],
+["Kỷ luật tập test","Không quy định","sample_500 chỉ gồm Train/Val; cấm đọc test trước Tuần 5; reserved_ids.json","Tránh chọn siêu tham số trên test và rò rỉ bài gốc"]
+];
+document.getElementById('chg').innerHTML=C.map((r,i)=>`<tr><td class="n">${i+1}</td>${r.map((x,j)=>`<td>${j===0?'<b>'+esc(x)+'</b>':esc(x)}</td>`).join('')}</tr>`).join('');
+}
+</script>
+</body>
+</html>
