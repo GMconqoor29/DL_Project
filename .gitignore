@@ -1,5 +1,27 @@
+# Python & Environment
+.venv/
+.env
+__pycache__/
+*.py[cod]
+
+# Tài liệu nháp / bài báo PDF tham khảo local
 *.pdf
 General Plan.txt
-!README.md
-.venv/
+topic-registration-form.md
+
+# Kho dữ liệu thô & các tập dữ liệu lớn (lưu trên Hugging Face Hub / Kaggle Dataset)
 datasets/
+data/raw/
+data/interim/
+data/processed/
+data/stress_test/
+data/features_cache/
+!data/sample_debug.jsonl
+
+# Trọng số mô hình
+weights/
+checkpoints/
+*.pt
+*.pth
+*.bin
+*.safetensors
