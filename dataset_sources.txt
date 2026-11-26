@@ -1,0 +1,89 @@
+DANH SÁCH NGUỒN DATASET CÔNG KHAI (PUBLIC)
+Đề tài: Phát hiện văn bản tiếng Việt do AI sinh ra và văn bản lai Người–AI
+Cập nhật: 2026-11-26 (số lượng kiểm tra qua Hugging Face API)
+
+======================================================================
+A. DATASET CÓ CẶP HUMAN – AI (dùng trực tiếp cho detection)
+======================================================================
+
+1. VietBinoculars – News (Sailor2-8B train/val, Gemma-3-12B test)
+   Link    : https://huggingface.co/datasets/trieunh/vietnamese.human.ai.news.sets
+   Số lượng: train 41,345 | validation 19,129 | test 7,222  (mỗi dòng = 1 bài người + 1 đoạn AI viết tiếp)
+   License : Apache-2.0
+
+2. VietBinoculars – Văn học Vũ Trọng Phụng (Sailor2-8B, Gemma-3-12B)
+   Link    : https://huggingface.co/datasets/trieunh/Vietnamese.Ai.Human.Literary.works.VuTrongPhung
+   Số lượng: 738 dòng (369 đoạn x 2 generator)
+   License : Apache-2.0
+
+3. VietBinoculars – Sampled Generations VTP (sampling, temperature 0.7)
+   Link    : https://huggingface.co/datasets/trieunh/SampledGenerations-VTP
+   Số lượng: 17,712 dòng AI (dựa trên cùng 369 đoạn Vũ Trọng Phụng)
+
+4. VietBinoculars – Text Rewriting (paraphrase / humanized, Sailor2-14B)
+   Link    : https://huggingface.co/datasets/trieunh/Text-Rewriting
+   Số lượng: 1,107 dòng x 4 biến thể AI (AI_text, paraphrase_1, paraphrase_2, humanized)
+   Ghi chú : dùng cho test độ bền (robustness); có mẫu lỗi lẫn tiếng Mã Lai, cần lọc
+
+5. ICCIES 2025 – Vietnamese News Human vs AI
+   Link    : https://huggingface.co/datasets/AnhNguyen2299/vietnamese_news_human_ai
+   Bản sao : https://huggingface.co/datasets/ICCIES-2025-DetectAI/vietnamese_news_human_ai
+   Số lượng: 200,000 (100k human Thanh Niên/VnExpress; 100k AI: GPT-4o-mini 50k, Gemini Flash 1.5 45k, Llama 3.3 + DeepSeek 5k)
+   License : CC-BY-4.0
+   Bài báo : https://link.springer.com/chapter/10.1007/978-3-031-98170-8_11
+
+======================================================================
+B. DATASET CHỈ CÓ VĂN BẢN NGƯỜI VIẾT (làm mồi sinh mixed / thêm domain)
+======================================================================
+
+6. Văn học Vũ Trọng Phụng (văn bản gốc, chia đoạn < 512 token PhoGPT)
+   Link    : https://huggingface.co/datasets/trieunh/Vietnamese_literature_VuTrongPhung
+   Số lượng: 369 đoạn
+   License : CC BY 4.0
+   Nguồn gốc: https://huggingface.co/datasets/ntt123/viet-tts-dataset
+
+7. Binhvq News Corpus
+   Link HF : https://huggingface.co/datasets/vietgpt/binhvq_news_vi
+   Bản gốc : https://github.com/binhvq/news-corpus
+   Số lượng: 19,365,593 đoạn (bản HF không có ID bài -> nên dùng bản gốc GitHub)
+
+8. Vietnamese Wikipedia (clean)
+   Link    : https://huggingface.co/datasets/lantian520/vietnamese-wikipedia-clean
+   Số lượng: 443,085 trang
+   Dump gốc: https://dumps.wikimedia.org/viwiki/  (nên dùng bản trước 2022)
+
+9. Vietnamese Book Corpus
+   Link    : https://huggingface.co/datasets/tmnam20/Vietnamese-Book-Corpus
+   Số lượng: 16,407 cuốn (lẫn sách tiếng Anh/sách dịch, cần lọc)
+
+======================================================================
+C. ĐÃ XEM NHƯNG KHÔNG PHÙ HỢP (để tham khảo)
+======================================================================
+
+- 5CD-AI/VietHTR-Line (gated, CC-BY-NC-ND; dòng chữ viết tay rời)
+  https://huggingface.co/datasets/5CD-AI/VietHTR-Line
+- uitnlp/vietnamese_students_feedback (câu quá ngắn)
+  https://huggingface.co/datasets/uitnlp/vietnamese_students_feedback
+- tarudesu/VOZ-HSD (bình luận diễn đàn ngắn)
+  https://huggingface.co/datasets/tarudesu/VOZ-HSD
+- roshansk23/Vietnam_HighSchool_Exam_Dataset (câu hỏi trắc nghiệm, không phải bài văn)
+  https://huggingface.co/datasets/roshansk23/Vietnam_HighSchool_Exam_Dataset
+- Jinyan1/COLING_2025_MGT_multingual (bản trên HF không có tiếng Việt)
+  https://huggingface.co/datasets/Jinyan1/COLING_2025_MGT_multingual
+
+======================================================================
+D. KHÔNG CÔNG KHAI – CẦN XIN TÁC GIẢ
+======================================================================
+
+- ViDetect (~6,800 bài văn: ~3,400 human + ~3,400 ChatGPT viết lại)
+  Bài báo: https://arxiv.org/abs/2405.03206   (không có link tải dữ liệu)
+
+======================================================================
+E. BÀI BÁO NGUỒN
+======================================================================
+
+- VietBinoculars : https://arxiv.org/abs/2509.26189
+- Binoculars     : https://arxiv.org/abs/2401.12070
+- ViDetect       : https://arxiv.org/abs/2405.03206
+- GenAI Content Detection Task 1 (COLING 2025): https://arxiv.org/abs/2501.11012
+- MultiSocial    : https://arxiv.org/abs/2406.12549

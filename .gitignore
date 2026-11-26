@@ -1,0 +1,5 @@
+*.pdf
+General Plan.txt
+!README.md
+.venv/
+datasets/
