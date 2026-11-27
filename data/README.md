@@ -1,132 +1,107 @@
-# Vietnamese AI-Generated & Mixed Human–AI Text Dataset
+# Vietnamese AI-Generated & Mixed Human–AI Text Dataset (`data-v1`)
 
-Thư mục này chứa tài liệu mô tả, file mẫu debug ([sample_debug.jsonl](./sample_debug.jsonl)) và là nơi lưu trữ cục bộ bộ dữ liệu chuẩn của dự án được host trên Hugging Face Hub: **`DLProject05/vi-mixed-ai-detection`**.
+Thư mục này chứa tài liệu mô tả, file mẫu debug ([sample_debug.jsonl](./sample_debug.jsonl)) và bộ dữ liệu chính thức **`data-v1`** tuân thủ [Detailed_Project_Plan_v3.md](../Detailed_Project_Plan_v3.md), được phân phối qua Hugging Face Hub: **`DLProject05/vi-mixed-ai-detection`**.
 
 ---
 
-## 1. Cách tải dữ liệu
+## 1. Cách tải & kiểm tra dữ liệu cho các thành viên
 
-Các tập dữ liệu lớn (`processed/`, `stress_test/`, `features_cache/`) **không** lưu trực tiếp trên GitHub mà được phân phối qua Hugging Face Hub.
+Các thư mục dữ liệu lớn (`processed/`, `calib/`, `stress_test/`, `features_cache/`) lưu trên Hugging Face Hub (không đẩy trực tiếp lên GitHub):
 
 ```bash
 # 1. Tạo file .env từ mẫu (điền HF_TOKEN nếu repo đang ở chế độ Private)
 cp .env.example .env
 
-# 2. Tải toàn bộ dữ liệu vào thư mục data/
+# 2. Tải toàn bộ dữ liệu (processed, calib, stress_test, features_cache) vào data/
 python scripts/download_data.py
 
-# Hoặc chỉ tải từng thư mục con cụ thể:
-python scripts/download_data.py --subdir processed
-python scripts/download_data.py --subdir stress_test
+# Hoặc chỉ tải các thư mục cần dùng:
+python scripts/download_data.py --subdir processed calib stress_test
+
+# 3. Chạy kiểm định QA & Gate G3 (xác nhận schema, zero leakage, MinHash & shortcut probes)
+python src/data/validate.py
+python src/data/probes.py
 ```
 
-Cấu trúc thư mục sau khi tải:
+Cấu trúc thư mục `data/`:
 ```text
 data/
 ├── README.md                 # Tài liệu mô tả bộ dữ liệu (tracked trên GitHub)
-├── sample_debug.jsonl        # 20 mẫu thật chuẩn schema (~111 KB, tracked trên GitHub để test nhanh)
-├── processed/                # Bộ Core Benchmark (4,996 mẫu: train, val, test, sample_500, dataset_stats.json)
-├── stress_test/              # 3 bộ kiểm thử mở rộng (Test-only: Văn học VTP, ICCIES Commercial, Text-Rewriting)
-└── features_cache/           # Đặc trưng xác suất trích từ cặp PhoGPT-4B (do TV2 bổ sung ở Tuần 2)
+├── sample_debug.jsonl        # 20 mẫu thật chuẩn schema v3 (chỉ từ Train/Val, tracked trên GitHub)
+├── processed/                # Tập Core Benchmark (5,486 mẫu: train, val, test, sample_500, dataset_stats.json, probe_report.json)
+├── calib/                    # Human Calibration Pool (1,000 mẫu Người: val_calib.jsonl, test_calib.jsonl)
+├── stress_test/              # 3 bộ kiểm thử mở rộng (Test-only: VTP, ICCIES, Text-Rewriting)
+└── features_cache/           # Đặc trưng xác suất trích từ cặp PhoGPT-4B / Qwen-0.5B (TV2 & TV6)
 ```
 
 ---
 
-## 2. Nguồn dữ liệu gốc (Data Sources)
+## 2. Thống kê Bộ Dữ Liệu Chính Thức (`data-v1`)
 
-Bộ dữ liệu được xây dựng và chọn lọc từ các bộ ngữ liệu tiếng Việt công khai (chi tiết đầy đủ trong [dataset_sources.txt](../dataset_sources.txt)):
-
-| Ký hiệu | Nguồn Hugging Face | Miền / Đặc điểm | Vai trò trong dự án | License |
-| :--- | :--- | :--- | :--- | :--- |
-| **A1** | `trieunh/vietnamese.human.ai.news.sets` | Báo chí (`Sailor2-8B` train/val, `Gemma-3-12B` test) | Xương sống cho Tập **Core** (`Train / Val / Core Test`) | Apache-2.0 |
-| **B8** | `lantian520/vietnamese-wikipedia-clean` | Wikipedia tiếng Việt (443k trang) | Bổ sung đa dạng miền cho `Human` & mồi `Mixed` | CC-BY-SA |
-| **B9** | `tmnam20/Vietnamese-Book-Corpus` | Sách tiếng Việt (16.4k cuốn, lọc đoạn giữa sách sạch) | Bổ sung đa dạng miền cho `Human` & mồi `Mixed` | Public |
-| **A2** | `trieunh/Vietnamese.Ai.Human.Literary.works.VuTrongPhung` | Văn học Vũ Trọng Phụng (369 đoạn gốc × 2 LLM) | **Stress-Test 1** – OOD Miền văn học *(100% Test-only)* | Apache-2.0 |
-| **A5** | `AnhNguyen2299/vietnamese_news_human_ai` (ICCIES 2025) | Báo chí + LLM thương mại (`GPT-4o-mini`, `Gemini 1.5 Flash`, `DeepSeek`, `Llama 3.3`) | **Stress-Test 2** – Commercial LLMs *(Test-only)* | CC-BY-4.0 |
-| **A4** | `trieunh/Text-Rewriting` | Viết lại 4 cấp độ trên 369 đoạn Vũ Trọng Phụng (`Sailor2-8B/14B`, `Gemma-3-12B`) | **Stress-Test 3** – Độ bền Paraphrase & Humanizer *(Test-only)* | MIT |
-
-> **Lưu ý chống rò rỉ dữ liệu:** Do 4 bộ họ *Vũ Trọng Phụng* (`A2`, `A3`, `A4`, `B6`) dùng chung đúng 369 đoạn văn gốc, nhóm **cách ly 100% các bộ này sang tập Stress-Test** (0% nằm trong `Train/Val`).
-
----
-
-## 3. Quy trình Tiền xử lý & Sinh dữ liệu Mixed (Generation Pipeline)
-
-Toàn bộ quy trình có thể tái lập 100% với `SEED = 42` qua 3 script:
-1. [src/data/preprocess.py](../src/data/preprocess.py) — Lọc sạch, tách câu, rút 3 lô rời nhau và tạo 3 bộ Stress-Test.
-2. [scripts/kaggle_vllm_generate.py](../scripts/kaggle_vllm_generate.py) / [scripts/kaggle_generate_notebook.ipynb](../scripts/kaggle_generate_notebook.ipynb) — Sinh phần viết tiếp trên Kaggle `GPU T4 x2`.
-3. [src/data/merge_generated.py](../src/data/merge_generated.py) — Hậu xử lý phần AI sinh ra, kiểm định và ghép thành `train/val/test.jsonl`.
-
-### Bước 1: Làm sạch & Khử Artifact (`src/data/text_utils.py`)
-* **Chuẩn hóa & gỡ định dạng AI:** Chuẩn hóa Unicode NFC, gỡ ký tự Markdown (`**bold**`, `__italic__`, `# Heading`), xóa dòng chú thích ảnh/tiêu đề rác (*"Ảnh: ..."*, *"Tóm tắt:"*, *"Tác giả:"*, *"Nguồn:"*, mã `== Heading ==` của Wiki).
-* **Khử lỗi câu cụt của VietBinoculars:** Do dữ liệu AI của `A1/A2/A4` được sinh tiếp sau prompt 50 tokens rồi cắt bỏ prompt, câu đầu tiên thường bị cụt giữa chừng. Pipeline **cắt bỏ phần chữ lẻ đầu bài đến hết dấu chấm câu đầu tiên** và loại bỏ câu cuối chưa hoàn chỉnh.
-* **Lọc ngôn ngữ tiếng Việt sạch:** Loại bỏ văn bản chứa HTML/URL, ký tự CJK (`> 2` ký tự), sách tiếng Anh (`B9`) và câu lỗi lẫn tiếng Mã Lai (`A4`) bằng ngưỡng tỷ lệ chữ cái có dấu tiếng Việt $\ge 13\%$.
-* **Tách câu & Tọa độ ký tự:** Tách câu bảo toàn các từ viết tắt tiếng Việt (`TP.`, `TS.`, `PGS.`, `Q.`, `P.`, số thập phân), đồng thời sinh mảng `sentence_char_spans` thỏa mãn bất biến `full_text[start:end] == sentences[j]` cho mọi câu.
-
-### Bước 2: Rút 3 Lô bài gốc hoàn toàn rời nhau (`SEED = 42`)
-Để tránh trùng lặp bài gốc và không gây nhiễu nhãn ở phần mở đầu, `preprocess.py` chọn lọc các bài sạch (`6–25` câu, `110–620` từ) rồi rút **Stratified Random Sampling** (cân bằng 3 nhóm độ dài `short / medium / long`) thành **3 lô hoàn toàn độc lập (`Disjoint Source Articles`)**:
-* **Lô 1 (`Human` — 1,500 mẫu):** Giữ nguyên 100% văn bản Người viết (`A1` + `B8` + `B9`).
-* **Lô 2 (`AI thuần` — 1,500 mẫu):** Lấy từ các bài khác Lô 1 gồm `1,000` mẫu `Sailor2-8B` (In-domain), `200` mẫu `Gemma-3-12B` (chỉ ở `Test` OOD), và `300` bài mồi cho `Qwen2.5-7B` sinh mới (cắt bỏ 2 câu mồi sau khi sinh để thành 100% AI).
-* **Lô 3 (`Mixed Human–AI` — 2,350 bài mồi):** Rút từ các bài Người hoàn toàn khác Lô 1 & Lô 2; với mỗi bài có $N$ câu ($N \ge 6$), chọn ngẫu nhiên vị trí cắt $k \sim \text{Uniform}(\max(2, \lfloor 0.2N \rfloor), \min(N-2, \lfloor 0.8N \rfloor))$, giữ lại $k$ câu đầu của Người làm prefix.
-
-*(Tập `A1` được khai thác theo đúng 3 file gốc tách biệt: `train.parquet` $\rightarrow$ `Train`; nửa đầu `validation.parquet` $\rightarrow$ `Val`; nửa sau `validation.parquet` $\rightarrow$ `Test In-Domain`; `test.parquet` $\rightarrow$ `Test OOD`.)*
-
-### Bước 3: Sinh văn bản tiếp nối bằng Base LLMs trên Kaggle (`vLLM`)
-* Chạy `2,650` prompt (`2,250` cho `Qwen/Qwen2.5-7B` và `400` cho `unsloth/Meta-Llama-3.1-8B` — bản Base mở không khóa quyền) trên Kaggle **`GPU T4 x2`** (`tensor_parallel_size=2`, `dtype=float16`).
-* **Lý do chọn Base Model:** Sinh tiếp trực tiếp (raw text completion) vào ngay sau câu thứ $k$, mạch văn tự nhiên và **0% bị dính câu dẫn nhập kiểu chatbot** (*"Dưới đây là phần viết tiếp..."*).
-* **Cấu hình sinh:** `temperature = 0.7`, `top_p = 0.9`, `repetition_penalty = 1.08`, và `max_new_tokens` tính tỷ lệ theo độ dài phần đuôi gốc của bài báo để giữ phân phối độ dài cân bằng với lớp `Human`.
-
-### Bước 4: Hậu xử lý & Kiểm định nghiêm ngặt (`src/data/merge_generated.py`)
-* Kiểm định tiếng Việt **trực tiếp trên riêng phần AI sinh ra** (không để phần prefix Người che lấp lỗi ngôn ngữ của AI), cắt câu cuối bị ngắt dở, yêu cầu tối thiểu 2 câu AI trọn vẹn (`>= 22` từ) cho `Mixed` và tối thiểu 3 câu (`>= 55` từ) cho `AI thuần`.
-* Trong `2,650` mẫu sinh từ Kaggle, giữ lại **2,296 mẫu sạch (86.6%)** và loại bỏ `354` mẫu lỗi/quá ngắn.
-* Kiểm chứng `assert` tự động đảm bảo **0% giao nhau `source_article_id`** giữa `train`, `val`, `test` và khớp 100% `sentence_char_spans`.
-
----
-
-## 4. Thống kê Bộ Dữ Liệu Chính Thức
-
-### 4.1. Tập Core Benchmark (`data/processed/` — Tổng **4,996 mẫu**)
+### 2.1. Tập Core Benchmark (`data/processed/` — Tổng **5,486 mẫu**)
 
 | Tập | Tổng mẫu | `Human` | `AI thuần` | `Mixed` | In-Domain vs. OOD Generator | Độ dài TB (`Human` / `AI` / `Mixed`) |
 | :--- | :---: | :---: | :---: | :---: | :--- | :---: |
-| **`train.jsonl`** | **3,270** | 1,000 | 978 | 1,292 | 100% In-Domain (`Sailor2-8B`: 780, `Qwen2.5-7B`: 1,490) | 328.5 / 355.9 / 389.7 từ |
-| **`val.jsonl`** | **697** | 220 | 195 | 282 | 100% In-Domain (`Sailor2-8B`: 150, `Qwen2.5-7B`: 327) | 331.2 / 327.3 / 354.3 từ |
-| **`test.jsonl`** | **1,029** | 280 | 293 | 456 | **478 In-Domain** + **551 OOD** (`Gemma-3-12B`: 200, `Llama-3.1-8B`: 351) | 328.8 / 386.7 / 383.5 từ |
+| **`train.jsonl`** | **3,500** | 1,000 | 1,000 | 1,500 | 100% ID (`Sailor2-8B`: 780, `Qwen2.5-7B`: 1,720) | 323.8 / 313.6 / 311.4 từ |
+| **`val.jsonl`** | **749** | 220 | 199 | 330 | 100% ID (`Sailor2-8B`: 150, `Qwen2.5-7B`: 379) | 324.4 / 313.3 / 308.5 từ |
+| **`test.jsonl`** | **1,237** | 320 | 399 | 518 | **539 ID** (`Sailor2`: 70, `Qwen2.5`: 149, `Human ID`: 170) + **698 OOD Gen** (`Gemma-3-12B`: 200, `Llama-3.1-8B`: 498) + `Human OOD`: 150 | 333.5 / 333.8 / 334.1 từ |
+| **Tổng Core** | **5,486** | **1,540** | **1,598** | **2,348** | **0% giao `source_article_id`, MinHash `Jaccard < 0.8`** | **6–24 câu, 150–650 từ** |
 
-* **Phân bố miền dữ liệu:** Báo chí (`4,431` mẫu — 88.7%), Wikipedia (`335` mẫu — 6.7%), Sách tiếng Việt (`230` mẫu — 4.6%).
-* **Tập rút gọn:** `sample_500.jsonl` (`350 train` / `75 val` / `75 test`) dùng để kiểm thử nhanh pipeline huấn luyện.
+* **Phân bố miền trên toàn Core:** Báo chí (`4,705` mẫu — 85.8%), Wikipedia (`486` mẫu — 8.9%), Sách tiếng Việt (`295` mẫu — 5.4%) — cả 3 lớp `Human`, `AI thuần` và `Mixed` đều có đủ 3 miền.
+* **`sample_500.jsonl`:** `500` mẫu rút từ `train` (`400`) và `val` (`100`) — **0% mẫu `test`** để bảo đảm kỷ luật tập Test khi debug và chọn siêu tham số.
 
-### 4.2. Ba bộ Stress-Test Mở Rộng (`data/stress_test/` — `Test-Only`)
+### 2.2. Tập Human Calibration Pool (`data/calib/` — **1,000 mẫu Người**, `subset = "calib"`)
+* **`val_calib.jsonl` (`500` Người):** `400 News A1-val · 60 Wiki · 40 Books` — chỉ dùng để chọn ngưỡng `1% FPR` (không dùng train hay chọn model).
+* **`test_calib.jsonl` (`500` Người):** `300 News A1-val-tail · 100 News A1-test · 60 Wiki · 40 Books` — kết hợp với `320` Người của `test.jsonl` thành **820 mẫu Người** để đo `FPR` và `TPR@1%FPR`.
+
+### 2.3. Ba bộ Stress-Test Mở Rộng (`data/stress_test/` — `Test-Only`, `subset = "stress"`)
 
 | File | Số mẫu | Mục đích đánh giá |
 | :--- | :---: | :--- |
-| **`test_vtp_domain.jsonl`** | **855** | Đánh giá chuyển miền sang Văn học Vũ Trọng Phụng (`Human` + `Sailor2-8B` + `Gemma-3-12B`). |
-| **`test_iccies_commercial.jsonl`** | **1,000** | Đánh giá trên LLM thương mại đóng (`500 Human` + `500 AI: GPT-4o-mini, Gemini 1.5 Flash, DeepSeek`), đã khử trùng 80 ký tự đầu với `Train/Val`. |
-| **`test_rewriting_robustness.jsonl`** | **3,819** | Đánh giá độ suy giảm hiệu năng qua 5 cấp độ (`human`, `ai_original`, `ai_paraphrase_1`, `ai_paraphrase_2`, `ai_humanized`), đã lọc sạch mẫu lẫn tiếng Mã Lai. |
+| **`test_vtp_domain.jsonl`** (ST1 - P0) | **911** | OOD miền văn học Vũ Trọng Phụng (`Human` + `Sailor2-8B` + `Gemma-3-12B`). |
+| **`test_iccies_commercial.jsonl`** (ST2 - P0) | **1,000** | LLM thương mại đóng (`500 Human` + `500 AI: GPT-4o-mini, Gemini 1.5 Flash, DeepSeek`), đã khử trùng MinHash với Core & Calib. |
+| **`test_rewriting_robustness.jsonl`** (ST3 - P1) | **3,872** | Độ bền qua 5 cấp độ (`human`, `ai_original`, `ai_paraphrase_1`, `ai_paraphrase_2`, `ai_humanized`), đã lọc mẫu lẫn tiếng Mã Lai. |
 
 ---
 
-## 5. Định dạng Dữ liệu (JSONL Schema)
+## 3. Kết quả Kiểm định Shortcut (Gate G3 — `data/processed/probe_report.json`)
 
-Mỗi dòng trong các file `.jsonl` là một đối tượng JSON theo chuẩn thống nhất:
+Huấn luyện Logistic Regression trên `train.jsonl`, đánh giá `AUROC` trên `val.jsonl` (ngưỡng đạt: **`AUROC <= 0.65`**):
+
+| Probe | So sánh | Val AUROC | Kết quả |
+| :--- | :--- | :---: | :---: |
+| **1. Câu đầu (`first_sentence_edge`)** | `Human` vs `AI thuần` | **0.6353** | **PASS** |
+| **2a. Câu cuối (`last_sentence_edge`)** | `Human` vs `AI thuần` | **0.6366** | **PASS** |
+| **2b. Câu cuối (`last_sentence_edge`)** | `Human` vs `Mixed` | **0.5596** | **PASS** |
+| **3. Độ dài (`length`: từ, câu, từ/câu)** | `Human` vs `AI + Mixed` | **0.5243** | **PASS** |
+| **4. Ký tự & Dấu câu (`punctuation`)** | `Human` vs `AI + Mixed` | **0.5914** | **PASS** |
+| **5. Cặp câu ranh giới (`boundary_edge`)** | `Human` vs `Mixed` | **0.5116** | **PASS** |
+
+---
+
+## 4. Định dạng Dữ liệu (JSONL Schema v3 — Hợp đồng C1)
 
 ```json
 {
-  "sample_id": "train_mixed_qwen_0000",
-  "source_article_id": "news_bf3589f91e473f89",
-  "split": "train",
-  "is_ood_generator": false,
+  "sample_id": "test_mixed_llama_0012",
+  "source_article_id": "news_00142",
+  "split": "test",
+  "subset": "core",
+  "is_ood_generator": true,
   "domain": "news",
   "doc_label": 1,
   "doc_type": "mixed_human_ai",
-  "generator": "Qwen/Qwen2.5-7B",
+  "generator": "meta-llama/Llama-3.1-8B",
+  "gen_config": {"repo": "unsloth/Meta-Llama-3.1-8B", "dtype": "fp16", "temperature": 0.7, "top_p": 0.9},
   "boundary_sentence_idx": 4,
-  "full_text": "Câu 1 của người. Câu 2 của người. ... Câu 5 do AI viết tiếp.",
-  "sentence_char_spans": [[0, 16], [17, 33], ...],
-  "sentences": ["Câu 1 của người.", "Câu 2 của người.", ...],
+  "full_text": "Câu 1. Câu 2. Câu 3. Câu 4. Câu 5 do AI. Câu 6 do AI.",
+  "sentence_char_spans": [[0, 6], [7, 13], [14, 20], [21, 27], [28, 40], [41, 53]],
+  "sentences": ["Câu 1.", "Câu 2.", "Câu 3.", "Câu 4.", "Câu 5 do AI.", "Câu 6 do AI."],
   "sentence_labels": [0, 0, 0, 0, 1, 1]
 }
 ```
 
-* `doc_label`: `0` = 100% Người viết; `1` = có chứa văn bản AI (`ai` hoặc `mixed_human_ai`).
-* `boundary_sentence_idx`: chỉ số `0-based` của câu đầu tiên do AI viết (`-1` nếu `human`, `0` nếu `ai` thuần, `2 <= b <= N - 2` nếu `mixed_human_ai`).
-* `sentence_char_spans`: cặp `[start, end]` trên `full_text` cho từng câu, dùng để căn chỉnh chính xác token BPE của `PhoGPT-4B` với từng câu trong nhánh `SeqXGPT`.
+* `subset`: `"core"`, `"calib"`, hoặc `"stress"`.
+* `doc_label`: `0` = 100% Người viết (`human`); `1` = có chứa văn bản AI (`ai` hoặc `mixed_human_ai`).
+* `boundary_sentence_idx`: chỉ số `0-based` $b \in \{0,\dots,N\}$ của câu AI đầu tiên (**$b = 0$ nếu 100% AI, $b = N$ nếu 100% Người**; mọi bản ghi đều thỏa bất biến `sentence_labels[i] == int(i >= b)`).
+* `sentence_char_spans`: cặp `[start, end]` khớp tuyệt đối `full_text[start:end] == sentences[i]`.

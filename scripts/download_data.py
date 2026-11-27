@@ -53,7 +53,7 @@ def main() -> None:
         "--subdir",
         nargs="*",
         default=None,
-        help="Chỉ tải các thư mục con cụ thể, ví dụ: --subdir processed stress_test features_cache",
+        help="Chỉ tải các thư mục con cụ thể, ví dụ: --subdir processed calib stress_test features_cache",
     )
     parser.add_argument("--token", default=default_token, help="HF Access Token (bỏ trống nếu repo Public hoặc đã hf auth login)")
     args = parser.parse_args()
